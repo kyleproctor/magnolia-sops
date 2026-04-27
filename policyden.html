@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PolicyDen Training — Magnolia Operations Hub</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ─── PolicyDen hub layout ─── */
+.pd-wrap{max-width:1280px;margin:0 auto;padding:36px 32px 80px}
+
+/* Hero chip / title row already handled by .hero in styles.css */
+
+/* ─── Module grid (hub view) ─── */
+.pd-intro{display:flex;justify-content:space-between;align-items:flex-end;gap:24px;margin-bottom:26px;flex-wrap:wrap}
+.pd-intro .heading h2{font-family:'Playfair Display',serif;font-size:28px;font-weight:700;color:var(--t1);letter-spacing:-.5px;margin-bottom:6px}
+.pd-intro .heading p{font-size:14px;color:var(--t3);max-width:620px;line-height:1.6}
+.pd-intro .counts{font-size:12px;font-weight:700;color:var(--t3);letter-spacing:.3px;white-space:nowrap;background:var(--white);border:1px solid var(--stroke);border-radius:var(--r-pill);padding:10px 18px;box-shadow:var(--sh)}
+.pd-intro .counts strong{color:var(--green);font-weight:700}
+
+.mod-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(300px,1fr));gap:18px}
+.mod{background:var(--white);border:1px solid var(--stroke);border-radius:16px;padding:24px 24px 22px;box-shadow:var(--sh);transition:all .25s cubic-bezier(.4,0,.2,1);cursor:pointer;position:relative;overflow:hidden;display:flex;flex-direction:column;min-height:210px;text-decoration:none;color:inherit}
+.mod::before{content:'';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--green),var(--green-l));opacity:0;transition:opacity .25s}
+.mod:hover{border-color:var(--green);box-shadow:var(--sh-lg);transform:translateY(-3px)}
+.mod:hover::before{opacity:1}
+.mod-ico{width:42px;height:42px;border-radius:10px;background:var(--green-bg2);display:flex;align-items:center;justify-content:center;color:var(--green);margin-bottom:16px;transition:all .25s}
+.mod-ico svg{width:22px;height:22px}
+.mod:hover .mod-ico{background:var(--green);color:#fff;transform:scale(1.05)}
+.mod-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:12px}
+.mod-accent{font-size:10px;font-weight:700;color:var(--green);background:var(--green-bg2);padding:4px 10px;border-radius:var(--r-pill);letter-spacing:.6px;text-transform:uppercase}
+.mod-accent.soon{background:rgba(153,153,153,.12);color:var(--t4)}
+.mod h3{font-size:18px;font-weight:700;color:var(--t1);letter-spacing:-.3px;margin-bottom:8px}
+.mod p{font-size:13px;color:var(--t3);line-height:1.65;margin-bottom:18px;flex:1}
+.mod-ft{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:14px;border-top:1px solid var(--stroke)}
+.mod-ft .cnt{font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.2px}
+.mod-ft .cnt strong{color:var(--t1);font-weight:700}
+.mod-ft .go{width:26px;height:26px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--sage-xl);color:var(--green);transition:all .2s}
+.mod-ft .go svg{width:12px;height:12px}
+.mod:hover .mod-ft .go{background:var(--green);color:#fff;transform:translateX(2px)}
+.mod.empty .mod-ico{background:var(--sage-l);color:var(--t4)}
+.mod.empty:hover .mod-ico{background:var(--green-bg2);color:var(--green)}
+
+/* ─── Module detail (SOP list) view ─── */
+.pd-detail-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:22px;flex-wrap:wrap}
+.pd-detail-hdr .heading{flex:1;min-width:280px}
+.pd-detail-hdr h2{font-family:'Playfair Display',serif;font-size:34px;font-weight:700;letter-spacing:-.6px;color:var(--t1);line-height:1.15;margin-bottom:8px}
+.pd-detail-hdr h2 em{font-style:italic;color:var(--green);font-weight:500}
+.pd-detail-hdr p{font-size:14.5px;color:var(--t3);max-width:620px;line-height:1.7}
+.pd-detail-hdr .meta{display:flex;gap:8px;flex-shrink:0;padding-top:6px}
+
+.pd-back{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.6px;text-transform:uppercase;margin-bottom:10px;transition:color .2s}
+.pd-back:hover{color:var(--green)}
+.pd-back svg{width:13px;height:13px}
+
+.sop-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(340px,1fr));gap:16px;margin-bottom:28px}
+.sopcard{background:var(--white);border:1px solid var(--stroke);border-radius:14px;padding:22px 22px 18px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:10px;text-decoration:none;color:inherit}
+.sopcard:hover{border-color:var(--green);box-shadow:var(--sh-md);transform:translateY(-2px)}
+.sopcard-top{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.sopcard-tag{font-size:10px;font-weight:700;color:var(--green);background:var(--green-bg2);padding:3px 10px;border-radius:var(--r-pill);letter-spacing:.6px;text-transform:uppercase}
+.sopcard-tag.draft{background:rgba(153,153,153,.12);color:var(--t3)}
+.sopcard-dur{font-size:11px;color:var(--t4);font-weight:600;font-variant-numeric:tabular-nums}
+.sopcard h4{font-size:16px;font-weight:700;color:var(--t1);letter-spacing:-.15px;line-height:1.35;margin:0}
+.sopcard p{font-size:12.5px;color:var(--t3);line-height:1.65;margin:0;flex:1}
+.sopcard-ft{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:12px;border-top:1px solid var(--stroke);margin-top:4px}
+.sopcard-ft .owner{font-size:11px;color:var(--t4);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.sopcard-ft .owner svg{width:12px;height:12px}
+.sopcard-ft .arrow{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--sage-xl);color:var(--green);transition:all .2s}
+.sopcard-ft .arrow svg{width:12px;height:12px}
+.sopcard:hover .sopcard-ft .arrow{background:var(--green);color:#fff;transform:translateX(2px)}
+
+/* Config / empty state for modules with no SOPs yet */
+.pd-coming{background:linear-gradient(135deg,var(--sage-xl) 0%,var(--white) 100%);border:1px dashed var(--stroke-h);border-radius:16px;padding:38px 32px;text-align:center}
+.pd-coming h4{font-family:'Playfair Display',serif;font-size:22px;color:var(--t1);margin-bottom:10px}
+.pd-coming p{font-size:13.5px;color:var(--t3);line-height:1.7;max-width:520px;margin:0 auto 16px}
+.pd-coming .docs-link{display:inline-flex;align-items:center;gap:8px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.4px;text-transform:uppercase;padding:10px 20px;border:1.5px solid var(--green);border-radius:var(--r-pill);transition:all .2s}
+.pd-coming .docs-link:hover{background:var(--green);color:#fff}
+.pd-coming .docs-link svg{width:13px;height:13px}
+
+/* Module page: quick links strip to the official docs */
+.pd-docs{background:var(--white);border:1px solid var(--stroke);border-radius:14px;padding:20px 24px;box-shadow:var(--sh);display:flex;align-items:center;justify-content:space-between;gap:20px;margin-top:8px;flex-wrap:wrap}
+.pd-docs-txt strong{display:block;font-size:13px;font-weight:700;color:var(--t1);margin-bottom:3px}
+.pd-docs-txt span{font-size:12px;color:var(--t3);line-height:1.55}
+.pd-docs a{display:inline-flex;align-items:center;gap:7px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.4px;text-transform:uppercase;padding:9px 18px;border:1.5px solid var(--green);border-radius:var(--r-pill);transition:all .2s;white-space:nowrap}
+.pd-docs a:hover{background:var(--green);color:#fff}
+.pd-docs a svg{width:12px;height:12px}
+
+@media (max-width:760px){
+  .pd-detail-hdr h2{font-size:26px}
+  .pd-intro{flex-direction:column;align-items:flex-start}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="nav"><div class="nav-in">
+  <div class="nav-brand">
+    <span class="mark">MAGNOLIA <em>Health Care</em></span>
+    <span class="sub">Operations</span>
+  </div>
+  <div class="nav-links">
+    <a href="https://magnoliahealthcare.com">Home</a>
+    <a href="https://magnoliahealthcare.com/#philosophy">Our Philosophy</a>
+    <a href="https://magnoliahealthcare.com/#atlas">Atlas AI</a>
+    <a href="index.html" class="on">Operations Hub</a>
+    <a href="https://magnoliahealthcare.com/#contact">Contact Us</a>
+  </div>
+</div></nav>
+
+<!-- Compact hero -->
+<section class="hero compact"><div class="hero-in">
+  <div class="hero-badge"><div class="hero-dot"></div><span id="heroBadge">Technology · PolicyDen</span></div>
+  <h1 class="serif" id="heroTitle">PolicyDen <em>Training</em></h1>
+  <p id="heroSub">Step-by-step walkthroughs for every feature of Magnolia's PolicyDen CRM — onboarding, daily workflows, and admin setup.</p>
+</div></section>
+
+<div class="pd-wrap" id="root"></div>
+
+<script src="policyden-data.js"></script>
+<script>
+const params  = new URLSearchParams(location.search);
+const moduleId = params.get('module') || '';
+const mods    = window.POLICYDEN_MODULES || {};
+
+const root = document.getElementById('root');
+
+function breadcrumb(module) {
+  return `
+    <div class="crumb">
+      <a href="index.html">Operations Hub</a>
+      <span class="div">/</span>
+      <a href="view.html?dept=technology&view=sops">Technology</a>
+      <span class="div">/</span>
+      <a href="policyden.html" ${module ? '' : 'class="on"'}>PolicyDen</a>
+      ${module ? `<span class="div">/</span><span class="on">${module.label}</span>` : ''}
+    </div>
+  `;
+}
+
+function renderHub() {
+  const entries = Object.entries(mods);
+  const totalSops = entries.reduce((n, [, m]) => n + (m.sops || []).length, 0);
+  const liveModules = entries.filter(([, m]) => (m.sops || []).length > 0).length;
+
+  document.getElementById('heroBadge').textContent = 'Technology · PolicyDen';
+  document.getElementById('heroTitle').innerHTML = 'PolicyDen <em>Training</em>';
+  document.getElementById('heroSub').textContent =
+    'Step-by-step walkthroughs for every feature of Magnolia\u2019s PolicyDen CRM — onboarding, daily workflows, and admin setup.';
+
+  root.innerHTML = `
+    ${breadcrumb(null)}
+    <div class="pd-intro">
+      <div class="heading">
+        <h2>Pick a module</h2>
+        <p>Each module contains a set of Kyle-style walkthroughs that mirror PolicyDen's official documentation, tuned for Magnolia's way of working.</p>
+      </div>
+      <div class="counts"><strong>${totalSops}</strong> walkthrough${totalSops === 1 ? '' : 's'} live · <strong>${liveModules}</strong> of ${entries.length} modules configured</div>
+    </div>
+
+    <div class="mod-grid">
+      ${entries.map(([id, m]) => {
+        const count = (m.sops || []).length;
+        const isEmpty = count === 0;
+        return `
+          <a class="mod ${isEmpty ? 'empty' : ''}" href="policyden.html?module=${id}">
+            <div class="mod-top">
+              <div class="mod-ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${m.icon}</svg></div>
+              <span class="mod-accent ${isEmpty ? 'soon' : ''}">${isEmpty ? 'Coming soon' : m.accent}</span>
+            </div>
+            <h3>${m.label}</h3>
+            <p>${m.description}</p>
+            <div class="mod-ft">
+              <span class="cnt"><strong>${count}</strong> walkthrough${count === 1 ? '' : 's'}</span>
+              <span class="go">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </a>`;
+      }).join('')}
+    </div>
+  `;
+}
+
+function renderModule(mod, id) {
+  document.getElementById('heroBadge').textContent = `PolicyDen · ${mod.label}`;
+  document.getElementById('heroTitle').innerHTML = `${mod.label.replace(/ /g, '&nbsp;')} <em>walkthroughs</em>`;
+  document.getElementById('heroSub').textContent = mod.description;
+  document.title = `PolicyDen · ${mod.label} — Magnolia Operations Hub`;
+
+  const sops = mod.sops || [];
+  const docsSlug = id === 'getting-started' ? 'quickstart' : id;
+
+  root.innerHTML = `
+    ${breadcrumb(mod)}
+
+    <a class="pd-back" href="policyden.html">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+      All PolicyDen modules
+    </a>
+
+    <div class="pd-detail-hdr">
+      <div class="heading">
+        <h2>${mod.label} <em>walkthroughs</em></h2>
+        <p>${mod.description}</p>
+      </div>
+      <div class="meta">
+        <span class="badge ${sops.length ? '' : 'draft'}"><span class="dot"></span>${sops.length ? sops.length + ' walkthrough' + (sops.length === 1 ? '' : 's') : 'Coming soon'}</span>
+      </div>
+    </div>
+
+    ${sops.length === 0 ? `
+      <div class="pd-coming">
+        <h4>No walkthroughs in ${mod.label} yet</h4>
+        <p>Kyle-style step-by-step walkthroughs for this module are being authored. In the meantime, the official PolicyDen documentation covers this area end-to-end.</p>
+        <a class="docs-link" href="https://magnoliahealthcare.mintlify.app/${docsSlug}" target="_blank" rel="noopener">
+          View official docs
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    ` : `
+      <div class="sop-grid">
+        ${sops.map(s => `
+          <a class="sopcard" href="sop.html?id=${s.sopId}&module=${id}">
+            <div class="sopcard-top">
+              <span class="sopcard-tag${(s.tag || '').toLowerCase() === 'draft' ? ' draft' : ''}">${s.tag || 'Walkthrough'}</span>
+              ${s.duration ? `<span class="sopcard-dur">${s.duration}</span>` : ''}
+            </div>
+            <h4>${s.title}</h4>
+            <p>${s.desc || ''}</p>
+            <div class="sopcard-ft">
+              <span class="owner">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+                PolicyDen · ${mod.label}
+              </span>
+              <span class="arrow">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+              </span>
+            </div>
+          </a>
+        `).join('')}
+      </div>
+
+      <div class="pd-docs">
+        <div class="pd-docs-txt">
+          <strong>Need the source of truth?</strong>
+          <span>Every walkthrough in this module mirrors PolicyDen's official documentation. Use the docs when you need a field-level reference.</span>
+        </div>
+        <a href="https://magnoliahealthcare.mintlify.app/${docsSlug}" target="_blank" rel="noopener">
+          Official docs
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>
+        </a>
+      </div>
+    `}
+  `;
+}
+
+if (moduleId && mods[moduleId]) {
+  renderModule(mods[moduleId], moduleId);
+} else {
+  renderHub();
+}
+</script>
+</body>
+</html>

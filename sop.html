@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SOP — Magnolia Health Care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ═══════════════════════════════════════════════════════════════════════════
+   KYLE-STYLE SOP VIEWER  (blueprint: aetna-mapd-downline-onboarding.html)
+   Every SOP in the hub renders through this single template. Sections /
+   steps / mockups / tips / warns / narration all come from window.SOPS
+   (see sops-data.js). Do not add SOP-specific CSS here — keep the template
+   universal, customize via sops-data.js.
+   ═══════════════════════════════════════════════════════════════════════════ */
+:root{
+  --danger:#c54040;--danger-bg:rgba(197,64,64,.05);
+}
+body{background:var(--bg,#fafbfb);color:var(--t1,#111);line-height:1.6;-webkit-font-smoothing:antialiased}
+.serif{font-family:'Playfair Display',Georgia,serif}
+
+/* ─── Back crumb bar (above hero) ─── */
+.sop-topbar{background:var(--white);border-bottom:1px solid var(--stroke);padding:12px 28px}
+.sop-topbar-in{max-width:1200px;margin:0 auto;display:flex;align-items:center;gap:10px;flex-wrap:wrap}
+.sop-topbar .back{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--t3);letter-spacing:.4px;text-transform:uppercase;text-decoration:none;transition:color .2s}
+.sop-topbar .back:hover{color:var(--green)}
+.sop-topbar .back svg{width:12px;height:12px}
+.sop-topbar .crumbs{display:flex;gap:8px;font-size:10.5px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--t4);flex-wrap:wrap;margin-left:14px;padding-left:14px;border-left:1px solid var(--stroke)}
+.sop-topbar .crumbs .div{opacity:.4}
+.sop-topbar .crumbs a{color:var(--t4);text-decoration:none;transition:color .2s}
+.sop-topbar .crumbs a:hover{color:var(--green)}
+.sop-topbar .crumbs .on{color:var(--green)}
+
+/* ─── Hero (deep-green gradient) ─── */
+.sop-hero{background:linear-gradient(160deg,var(--green-xd,#002a24) 0%,var(--green-d,#003830) 30%,var(--green,#056356) 60%,var(--green-d,#003830) 100%);padding:56px 28px 52px;text-align:center;position:relative;overflow:hidden}
+.sop-hero::before{content:'';position:absolute;inset:0;background-image:radial-gradient(rgba(255,255,255,.08) 1px,transparent 1px);background-size:24px 24px;pointer-events:none}
+.sop-hero::after{content:'';position:absolute;top:-40%;right:-20%;width:80%;height:180%;background:radial-gradient(ellipse,rgba(6,126,109,.25) 0%,transparent 65%);pointer-events:none}
+.sop-hero-in{position:relative;max-width:720px;margin:0 auto;z-index:1}
+.sop-hero-badge{display:inline-flex;align-items:center;gap:8px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.1);padding:6px 18px;border-radius:var(--r-pill);font-size:10.5px;font-weight:700;color:rgba(255,255,255,.72);letter-spacing:1px;text-transform:uppercase;margin-bottom:22px;backdrop-filter:blur(8px)}
+.sop-hero-dot{width:7px;height:7px;border-radius:50%;background:#34d399;box-shadow:0 0 8px rgba(52,211,153,.5)}
+.sop-hero h1{font-size:38px;font-weight:700;color:#fff;line-height:1.15;letter-spacing:-.6px;margin-bottom:14px;font-family:'Playfair Display',serif}
+.sop-hero h1 em{font-style:normal;color:var(--sage,#e3eae9)}
+.sop-hero p{font-size:15px;color:rgba(255,255,255,.6);max-width:560px;margin:0 auto 16px;font-weight:400;line-height:1.7}
+.sop-hero-meta{display:inline-flex;gap:10px;font-size:10.5px;color:rgba(255,255,255,.45);font-weight:600;letter-spacing:.6px;text-transform:uppercase}
+.sop-hero-meta .div{opacity:.5}
+
+/* ─── Main content wrap ─── */
+.sop-wrap{max-width:1200px;margin:0 auto;padding:0 28px}
+.sop-content{margin-top:-28px;position:relative;z-index:2;padding-bottom:40px}
+
+/* ─── Stats strip ─── */
+.sop-stats{display:grid;grid-template-columns:repeat(var(--sec-count,4),1fr);background:var(--white);border-radius:16px;box-shadow:var(--sh-lg);overflow:hidden;margin-bottom:22px}
+.sop-stat{padding:22px 14px;text-align:center;border-right:1px solid var(--stroke);cursor:pointer;transition:background .2s}
+.sop-stat:hover{background:var(--sage-xl)}
+.sop-stat:last-child{border-right:none}
+.sop-stat-val{font-size:23px;font-weight:700;letter-spacing:-.3px;font-family:'Playfair Display',serif}
+.sop-stat-val.gr{color:var(--green)}
+.sop-stat-lbl{font-size:10px;font-weight:700;color:var(--t4);text-transform:uppercase;letter-spacing:1px;margin-top:4px}
+
+/* ─── Progress card ─── */
+.sop-prog{background:var(--white);border-radius:var(--r);padding:18px 22px;box-shadow:var(--sh);margin-bottom:18px}
+.sop-prog-row{display:flex;justify-content:space-between;align-items:center;margin-bottom:9px}
+.sop-prog-row span{font-size:12.5px;font-weight:700;color:var(--t3);letter-spacing:.3px}
+.sop-prog-pct{color:var(--green)!important}
+.sop-prog-track{width:100%;height:6px;border-radius:3px;background:var(--sage-l);overflow:hidden}
+.sop-prog-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--green-l));transition:width .5s cubic-bezier(.4,0,.2,1)}
+
+/* ─── Pills (section jumps) + Narrate toggle ─── */
+.sop-pills{display:flex;gap:8px;flex-wrap:wrap;align-items:center;margin-bottom:20px}
+.sop-pill{padding:8px 18px;border-radius:var(--r-pill);font-size:12px;font-weight:700;border:1.5px solid var(--stroke);background:var(--white);color:var(--t3);cursor:pointer;transition:all .2s;box-shadow:var(--sh);white-space:nowrap;letter-spacing:.2px}
+.sop-pill:hover{border-color:var(--green);color:var(--green);background:var(--green-bg)}
+.sop-pill.on{background:var(--green);border-color:var(--green);color:#fff;box-shadow:0 2px 10px rgba(5,99,86,.25)}
+.sop-pill.dn{background:var(--green-bg);border-color:var(--green-l);color:var(--green)}
+.sop-pill.sm{padding:3px 10px;font-size:10px;font-weight:700;letter-spacing:.3px}
+.sop-spc{flex:1}
+.tog-row{display:flex;align-items:center;gap:8px}
+.tog-lbl{font-size:10.5px;font-weight:700;color:var(--t4);letter-spacing:.5px;text-transform:uppercase}
+.tog{width:36px;height:20px;border-radius:10px;background:var(--sage);cursor:pointer;position:relative;transition:all .2s;border:1.5px solid var(--stroke)}
+.tog.on{background:var(--green);border-color:var(--green)}
+.tog::after{content:'';position:absolute;top:2px;left:2px;width:14px;height:14px;border-radius:50%;background:#fff;box-shadow:0 1px 3px rgba(0,0,0,.12);transition:transform .2s}
+.tog.on::after{transform:translateX(16px)}
+
+/* ─── Section checklist card (active section's steps) ─── */
+.cl-card{background:var(--white);border:1px solid var(--stroke);border-radius:var(--r);overflow:hidden;margin-bottom:16px;box-shadow:var(--sh)}
+.cl-hdr{padding:13px 18px;display:flex;align-items:center;justify-content:space-between;background:var(--sage-xl)}
+.cl-ttl{font-size:12.5px;font-weight:700;color:var(--t1);display:flex;align-items:center;gap:10px;letter-spacing:.2px}
+.cl-body{padding:6px 10px 12px}
+.sr{display:flex;align-items:center;gap:10px;padding:9px 12px;border-radius:var(--r-sm);cursor:pointer;transition:background .15s}
+.sr:hover{background:var(--sage-xl)}
+.sr.act{background:var(--green-bg2)}
+.sr-lbl{font-size:13px;font-weight:500;color:var(--t1);line-height:1.4}
+.sr-lbl.dn{text-decoration:line-through;color:var(--t5)}
+.sr-lbl.cur{font-weight:700;color:var(--green)}
+.chk{width:18px;height:18px;border-radius:5px;border:2px solid var(--stroke-h);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;background:#fff}
+.chk.on{background:var(--green);border-color:var(--green)}
+
+/* ─── Audio narration ─── */
+.sop-audio{background:var(--white);border-radius:var(--r);padding:16px 20px;box-shadow:var(--sh);border:1px solid var(--stroke);margin-bottom:22px}
+.sop-audio-row{display:flex;align-items:center;gap:14px}
+.sop-audio-trk{flex:1;height:5px;border-radius:3px;background:var(--sage-l);overflow:hidden}
+.sop-audio-fill{height:100%;border-radius:3px;background:linear-gradient(90deg,var(--green),var(--green-l));transition:width .15s linear}
+.sop-audio-txt{font-size:13px;color:var(--t3);font-style:italic;margin-top:13px;line-height:1.7;padding-top:12px;border-top:1px solid var(--stroke)}
+.sop-audio-muted{font-size:11px;color:var(--t4);font-style:italic;margin-top:10px;padding-top:10px;border-top:1px dashed var(--stroke)}
+
+/* ─── Main grid (mockup + detail) ─── */
+.sop-grid{display:grid;grid-template-columns:55fr 45fr;gap:22px;align-items:start;margin-bottom:24px}
+
+/* ─── Mockup card ─── */
+.mock-card{background:var(--white);border-radius:14px;padding:16px;box-shadow:var(--sh-md);border:1px solid var(--stroke);position:relative}
+.mock-card svg,.mock-card .mockup-svg{width:100%;height:auto;border-radius:var(--r-sm);display:block}
+.mock-card .mockup-empty{padding:64px 24px;text-align:center;color:var(--t4);font-size:12.5px}
+.mock-card .mockup-empty svg{width:34px;height:34px;opacity:.4;margin-bottom:8px}
+.mock-cap{font-size:10.5px;font-weight:600;color:var(--t5);text-align:center;margin-top:10px;letter-spacing:.3px}
+.hl-overlay{position:absolute;border-radius:6px;background:rgba(5,99,86,.06);border:2px solid var(--green);pointer-events:none;transition:all .35s cubic-bezier(.4,0,.2,1);box-shadow:0 0 0 4px rgba(5,99,86,.12),0 0 30px rgba(5,99,86,.2);animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{box-shadow:0 0 0 4px rgba(5,99,86,.12),0 0 30px rgba(5,99,86,.18)}50%{box-shadow:0 0 0 7px rgba(5,99,86,.2),0 0 45px rgba(5,99,86,.32)}}
+
+/* ─── Detail panel ─── */
+.detail{background:var(--white);border-radius:14px;padding:26px 26px;box-shadow:var(--sh-md);border:1px solid var(--stroke)}
+.s-meta{display:flex;align-items:center;gap:10px;margin-bottom:14px;flex-wrap:wrap}
+.s-badge{display:inline-flex;padding:5px 14px;border-radius:var(--r-pill);background:var(--green-bg2);color:var(--green);font-size:10.5px;font-weight:700;letter-spacing:.5px;text-transform:uppercase}
+.s-sec{font-size:11.5px;color:var(--t4);font-weight:600;letter-spacing:.3px}
+.s-title{font-size:24px;font-weight:700;letter-spacing:-.4px;margin-bottom:8px;color:var(--t1);font-family:'Playfair Display',serif;line-height:1.2}
+.s-desc{font-size:14.5px;color:var(--t2);margin-bottom:18px;line-height:1.7;font-weight:500}
+
+/* Collapsible "Details" accordion */
+.d-card{border:1px solid var(--stroke);border-radius:var(--r-sm);overflow:hidden;margin-bottom:14px}
+.d-hdr{padding:11px 14px;font-size:11.5px;font-weight:700;color:var(--t3);background:var(--sage-xl);cursor:pointer;display:flex;align-items:center;gap:8px;transition:background .15s;letter-spacing:.4px;text-transform:uppercase;user-select:none}
+.d-hdr:hover{background:var(--sage-l)}
+.d-chev{transition:transform .2s;font-size:9px;color:var(--t4)}
+.d-chev.op{transform:rotate(90deg)}
+.d-body{padding:14px;font-size:13.5px;color:var(--t2);line-height:1.7}
+.d-body.hid{display:none}
+
+/* Callouts */
+.co{padding:12px 16px;border-radius:var(--r-sm);margin-bottom:14px;border-left:3px solid}
+.co.tip{background:var(--green-bg);border-left-color:var(--green)}
+.co.warn{background:var(--danger-bg);border-left-color:var(--danger)}
+.co-t{font-size:10.5px;font-weight:700;margin-bottom:3px;text-transform:uppercase;letter-spacing:.7px}
+.co.tip .co-t{color:var(--green)}
+.co.warn .co-t{color:var(--danger)}
+.co-x{font-size:13px;color:var(--t2);line-height:1.6}
+
+/* "Mark complete" row */
+.chk-row{display:flex;align-items:center;gap:10px;cursor:pointer;padding:8px 0;user-select:none}
+.chk-lbl{font-size:13px;color:var(--t3);font-weight:600}
+
+/* ─── Bottom navigation ─── */
+.navb{display:flex;align-items:center;gap:12px;background:var(--white);border-radius:var(--r);padding:14px 20px;box-shadow:var(--sh);border:1px solid var(--stroke);margin-bottom:32px;flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 22px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;font-family:inherit;border:none;cursor:pointer;transition:all .2s;white-space:nowrap;letter-spacing:.2px}
+.btn svg{width:14px;height:14px}
+.btn-p{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(5,99,86,.22)}
+.btn-p:hover:not(:disabled){background:var(--green-l);box-shadow:0 4px 14px rgba(5,99,86,.3);transform:translateY(-1px)}
+.btn-s{background:var(--white);color:var(--t1);border:1.5px solid var(--stroke);box-shadow:var(--sh)}
+.btn-s:hover:not(:disabled){border-color:var(--stroke-h);background:var(--sage-xl)}
+.btn:disabled{opacity:.35;cursor:not-allowed;box-shadow:none;transform:none!important}
+.navb-ct{font-size:12.5px;font-weight:700;color:var(--t4);letter-spacing:.2px}
+
+/* ─── Footer ─── */
+.sop-foot{text-align:center;padding:40px 28px;border-top:1px solid var(--stroke);margin-top:20px;background:var(--white)}
+.sop-foot-t{font-size:12px;color:var(--t3);margin-bottom:6px;font-weight:600}
+.sop-foot-l{font-size:10.5px;color:var(--t5);line-height:1.8}
+
+/* ─── Error state ─── */
+.sop-error{max-width:520px;margin:80px auto;text-align:center;padding:44px 32px;background:var(--white);border-radius:14px;box-shadow:var(--sh-md)}
+.sop-error h3{font-family:'Playfair Display',serif;font-size:24px;color:var(--t1);margin-bottom:12px}
+.sop-error p{font-size:13.5px;color:var(--t3);line-height:1.7;margin-bottom:20px}
+
+/* ─── Responsive ─── */
+@media (max-width:820px){
+  .sop-grid{grid-template-columns:1fr}
+  .sop-stats{grid-template-columns:repeat(2,1fr)}
+  .sop-stat:nth-child(2n){border-right:none}
+  .sop-stat{border-bottom:1px solid var(--stroke)}
+  .sop-hero h1{font-size:28px}
+  .sop-pills{gap:6px}
+  .sop-pill{padding:7px 14px;font-size:11.5px}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Nav (shared) -->
+<nav class="nav"><div class="nav-in">
+  <div class="nav-brand">
+    <span class="mark">MAGNOLIA <em>Health Care</em></span>
+    <span class="sub">Operations</span>
+  </div>
+  <div class="nav-links">
+    <a href="https://magnoliahealthcare.com">Home</a>
+    <a href="https://magnoliahealthcare.com/#philosophy">Our Philosophy</a>
+    <a href="https://magnoliahealthcare.com/#atlas">Atlas AI</a>
+    <a href="index.html" class="on">Operations Hub</a>
+    <a href="https://magnoliahealthcare.com/#contact">Contact Us</a>
+  </div>
+</div></nav>
+
+<div id="root"></div>
+
+<script src="policyden-data.js"></script>
+<script src="sops-data.js"></script>
+<script>
+/* ═══════════════════════════════════════════════════════════════════════════
+   Kyle-style SOP viewer runtime.
+   Reads: window.SOPS[sopId], window.POLICYDEN_MODULES[moduleId],
+          window.MOCKUP_FNS (named dynamic renderers), window.MOCKUPS (static).
+   Writes: localStorage `magnolia-sop-progress:<sopId>` for resume-on-reload.
+   ═══════════════════════════════════════════════════════════════════════════ */
+const params = new URLSearchParams(location.search);
+const sopId  = params.get('id') || '';
+const deptId = params.get('dept') || '';
+const moduleId = params.get('module') || '';
+const sop = (window.SOPS && window.SOPS[sopId]) || null;
+
+// Back link + crumbs resolve by priority: module → dept → home.
+function resolveBack() {
+  if (moduleId && window.POLICYDEN_MODULES && window.POLICYDEN_MODULES[moduleId]) {
+    return {
+      href:  `policyden.html?module=${moduleId}`,
+      label: `Back to ${window.POLICYDEN_MODULES[moduleId].label}`,
+      crumbs: [
+        { href: 'index.html', label: 'Operations Hub' },
+        { href: 'view.html?dept=technology&view=sops', label: 'Technology' },
+        { href: 'policyden.html', label: 'PolicyDen' },
+        { href: `policyden.html?module=${moduleId}`, label: window.POLICYDEN_MODULES[moduleId].label },
+      ],
+    };
+  }
+  if (deptId) {
+    return {
+      href:  `view.html?dept=${deptId}&view=sops`,
+      label: 'Back to SOPs',
+      crumbs: [
+        { href: 'index.html', label: 'Operations Hub' },
+        { href: `view.html?dept=${deptId}&view=sops`, label: 'SOPs' },
+      ],
+    };
+  }
+  return {
+    href: 'index.html',
+    label: 'Operations Hub',
+    crumbs: [ { href: 'index.html', label: 'Operations Hub' } ],
+  };
+}
+const back = resolveBack();
+
+// Missing SOP → friendly error state.
+if (!sop) {
+  document.getElementById('root').innerHTML = `
+    <div class="sop-error">
+      <h3>SOP not found</h3>
+      <p>The SOP <strong>${sopId ? '"' + sopId + '"' : '(none specified)'}</strong> doesn't exist in the dataset.
+         Ask the author to add it to <code>sops-data.js</code>, or go back to the Operations Hub.</p>
+      <a class="btn btn-p" href="${back.href}" style="text-decoration:none">← ${back.label}</a>
+    </div>`;
+} else {
+  /* ─── Flatten steps & state ─── */
+  const flat = []; // [{ sectionIdx, step }]
+  sop.sections.forEach((sec, si) => sec.s.forEach(step => flat.push({ sectionIdx: si, step })));
+  const TOTAL = flat.length;
+
+  const STORAGE_KEY = `magnolia-sop-progress:${sopId}`;
+  const loadDone = () => { try { return new Set(JSON.parse(localStorage.getItem(STORAGE_KEY) || '[]')); } catch { return new Set(); } };
+  const saveDone = () => { try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...state.done])); } catch {} };
+
+  const state = {
+    cur: 0,                // flat step index
+    done: loadDone(),      // Set<stepId>
+    narrateOn: false,      // auto-play narration on section change
+    detailOpen: true,      // "Details" accordion
+    speaking: false,       // is SpeechSynthesis currently speaking
+    speakSec: -1,          // which section is currently being spoken
+    speakProg: 0,          // 0..1 progress estimate (duration-based)
+    speakTimer: null,
+    utt: null,             // active SpeechSynthesisUtterance
+  };
+
+  // Start on first uncompleted step (resume-on-reload).
+  const firstTodo = flat.findIndex(f => !state.done.has(f.step.id));
+  if (firstTodo > 0) state.cur = firstTodo;
+
+  /* ─── Template shell (rendered once; inner sections re-render on state change) ─── */
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    <div class="sop-topbar">
+      <div class="sop-topbar-in">
+        <a class="back" href="${back.href}">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+          ${back.label}
+        </a>
+        <div class="crumbs">
+          ${back.crumbs.map((c,i)=>`${i>0?'<span class="div">/</span>':''}<a href="${c.href}">${c.label}</a>`).join('')}
+          <span class="div">/</span>
+          <span class="on" id="crumbTtl"></span>
+        </div>
+      </div>
+    </div>
+
+    <div class="sop-hero"><div class="sop-hero-in">
+      <div class="sop-hero-badge"><div class="sop-hero-dot"></div>Standard Operating Procedure</div>
+      <h1 class="serif">${sop.title}</h1>
+      ${sop.description ? `<p>${sop.description}</p>` : ''}
+      <div class="sop-hero-meta">
+        ${sop.department ? `<span>${sop.department}</span>` : ''}
+        ${sop.department ? '<span class="div">·</span>' : ''}
+        <span>v${sop.version || '1.0'}</span>
+        ${sop.effective ? '<span class="div">·</span><span>' + sop.effective + '</span>' : ''}
+      </div>
+    </div></div>
+
+    <div class="sop-wrap"><div class="sop-content" id="app"></div></div>
+
+    <div class="sop-foot">
+      <div class="sop-foot-t">${String(sop.title).replace(/<\/?[^>]+>/g,'')} &bull; Magnolia Operations</div>
+      <div class="sop-foot-l">1855 Griffin Road Suite A410, Dania Beach, FL 33004 &bull; 1-877-486-2048<br>support@magnoliahealthcare.com &bull; &copy; Magnolia Health Care 2026</div>
+    </div>
+  `;
+  document.getElementById('crumbTtl').textContent = String(sop.title).replace(/<\/?[^>]+>/g,'');
+
+  /* ─── Helpers ─── */
+  const sectionStart = si => { let c=0; for (let i=0;i<si;i++) c += sop.sections[i].s.length; return c; };
+  const CK = '<svg width="10" height="10" viewBox="0 0 10 10" fill="none"><path d="M2 5l2.5 2.5L8 3" stroke="white" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+
+  /* ─── Narration ─────────────────────────────────────────────────────────
+     Priority: ElevenLabs Matilda MP3 (sop.narration[si].audio)
+              → SpeechSynthesis fallback with sop.narration[si].transcript
+              → auto-generated transcript from the step list.
+     Run `python3 scripts/policyden_generate_narration.py` to bake the
+     Matilda MP3s (matches the Aetna MAPD blueprint) and populate the
+     `audio:` fields in sops-data.js. ───────────────────────────────────── */
+  function narrationText(si) {
+    const provided = sop.narration && sop.narration[si] && sop.narration[si].transcript;
+    if (provided) return provided;
+    const sec = sop.sections[si];
+    const head = `${sec.i}. ${sec.t}. `;
+    const body = sec.s.map(s => `Step ${s.id}. ${s.t}. ${s.d || ''}`).join(' ');
+    return head + body;
+  }
+  function narrationAudio(si) {
+    return (sop.narration && sop.narration[si] && sop.narration[si].audio) || null;
+  }
+
+  let htmlAudio = null; // HTMLAudioElement for Matilda MP3 playback
+
+  // Speak using the browser's SpeechSynthesis API. Used as a fallback when no
+  // Matilda MP3 exists on disk yet (e.g. before anyone has run the generator).
+  function speakBrowserTTS(si) {
+    if (!('speechSynthesis' in window)) return;
+    const text = narrationText(si);
+    const utt = new SpeechSynthesisUtterance(text);
+    utt.rate = 1.02; utt.pitch = 1.0; utt.volume = 1.0;
+    const voices = speechSynthesis.getVoices();
+    // Prefer warm female English voices similar to Matilda's tone.
+    const pref = voices.find(v => /samantha|matilda|serena|zira|karen|jenny|allison|victoria/i.test(v.name))
+              || voices.find(v => /en-US|en-GB/i.test(v.lang));
+    if (pref) utt.voice = pref;
+    utt.onstart = () => { state.speaking = true; state.speakSec = si; state.speakProg = 0; startSpeakTimer(text); renderShell(); };
+    utt.onend   = () => { state.speaking = false; state.speakProg = 1; stopSpeakTimer(); renderShell(); };
+    utt.onerror = () => { state.speaking = false; stopSpeakTimer(); renderShell(); };
+    state.utt = utt;
+    speechSynthesis.speak(utt);
+  }
+
+  function speak(si) {
+    cancelSpeak();
+    const audioUrl = narrationAudio(si);
+    if (audioUrl) {
+      const a = new Audio(audioUrl);
+      htmlAudio = a;
+      let fellBack = false;
+      const fallback = () => {
+        if (fellBack) return;
+        fellBack = true;
+        console.info('[narration] Matilda MP3 unavailable; falling back to browser TTS:', audioUrl);
+        htmlAudio = null;
+        speakBrowserTTS(si);
+      };
+      a.addEventListener('timeupdate', () => {
+        if (!a.duration) return;
+        state.speakProg = a.currentTime / a.duration;
+        const fill = document.getElementById('audFill');
+        if (fill) fill.style.width = (state.speakProg * 100) + '%';
+      });
+      a.addEventListener('play',  () => { state.speaking = true; state.speakSec = si; renderShell(); });
+      a.addEventListener('pause', () => { state.speaking = false; renderShell(); });
+      a.addEventListener('ended', () => { state.speaking = false; state.speakProg = 1; renderShell(); });
+      // The MP3 either doesn't exist or can't be decoded → use browser TTS.
+      a.addEventListener('error', fallback);
+      a.play().catch(fallback);
+      return;
+    }
+    speakBrowserTTS(si);
+  }
+  function startSpeakTimer(text) {
+    const start = performance.now();
+    const est = Math.max(3, text.split(/\s+/).length * 0.4);
+    stopSpeakTimer();
+    state.speakTimer = setInterval(() => {
+      state.speakProg = Math.min(0.99, (performance.now() - start) / (est * 1000));
+      const fill = document.getElementById('audFill');
+      if (fill) fill.style.width = (state.speakProg * 100) + '%';
+    }, 120);
+  }
+  function stopSpeakTimer() { if (state.speakTimer) { clearInterval(state.speakTimer); state.speakTimer = null; } }
+  function pauseSpeak() {
+    if (htmlAudio && !htmlAudio.paused) { htmlAudio.pause(); return; }
+    if ('speechSynthesis' in window && state.speaking) { speechSynthesis.pause(); state.speaking = false; stopSpeakTimer(); renderShell(); }
+  }
+  function resumeSpeak() {
+    if (htmlAudio && htmlAudio.paused) { htmlAudio.play(); return; }
+    if ('speechSynthesis' in window && state.utt) { speechSynthesis.resume(); state.speaking = true; renderShell(); }
+  }
+  function cancelSpeak() {
+    if (htmlAudio) { try { htmlAudio.pause(); } catch (e) {} htmlAudio = null; }
+    if ('speechSynthesis' in window) speechSynthesis.cancel();
+    state.speaking = false; state.speakProg = 0; stopSpeakTimer();
+  }
+
+  /* ─── Mockup rendering ─── */
+  function renderMockupInto(pane, step) {
+    // Renderer priority: sop.mockupFn name → global window.MOCKUP_FN → static MOCKUPS[m].
+    let rendered = '';
+    if (step.m) {
+      const fnName = sop.mockupFn;
+      const fn = (fnName && window.MOCKUP_FNS && window.MOCKUP_FNS[fnName]) || window.MOCKUP_FN;
+      if (fn) { try { rendered = fn(step.m, step.h || ''); } catch (e) { console.error(e); } }
+      if (!rendered && window.MOCKUPS && window.MOCKUPS[step.m]) rendered = window.MOCKUPS[step.m];
+    }
+    if (!rendered) {
+      pane.innerHTML = `<div class="mockup-empty">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="3" width="18" height="18" rx="2"/><path d="M8 12h8"/></svg>
+        <div>No visual for this step</div>
+      </div>`;
+      return;
+    }
+    pane.innerHTML = rendered;
+    // Pulsing highlight overlay for static SVGs that expose data-hl rects.
+    // Skip if the renderer already emitted its own .hl-overlay (e.g. the
+    // PolicyDen <img>-based renderer positions it with percentage coords).
+    requestAnimationFrame(() => {
+      if (pane.querySelector('.hl-overlay')) return;
+      const svg = pane.querySelector('svg.mockup-svg') || pane.querySelector('svg');
+      if (!svg || !step.h) return;
+      const target = svg.querySelector(`[data-hl="${step.h}"]`);
+      if (!target) return;
+      const paneRect = pane.getBoundingClientRect();
+      const tRect = target.getBoundingClientRect();
+      const overlay = document.createElement('div');
+      overlay.className = 'hl-overlay';
+      overlay.style.left = (tRect.left - paneRect.left - 6) + 'px';
+      overlay.style.top  = (tRect.top  - paneRect.top  - 6) + 'px';
+      overlay.style.width  = (tRect.width  + 12) + 'px';
+      overlay.style.height = (tRect.height + 12) + 'px';
+      pane.appendChild(overlay);
+    });
+  }
+
+  /* ─── Main render ─── */
+  function renderShell() {
+    const step = flat[state.cur].step;
+    const si = flat[state.cur].sectionIdx;
+    const sec = sop.sections[si];
+    const pct = Math.round(((state.cur + 1) / TOTAL) * 100);
+    const isSpeakingThis = state.speaking && state.speakSec === si;
+
+    let h = '';
+
+    // Stats strip — one column per section. Current shows X/Y (of total steps),
+    // others show done/total for that section.
+    h += `<div class="sop-stats" style="--sec-count:${sop.sections.length}">`;
+    sop.sections.forEach((s, i) => {
+      const isC = i === si;
+      const val = isC ? `${state.cur+1}/${TOTAL}` : `${s.s.filter(x=>state.done.has(x.id)).length}/${s.s.length}`;
+      const lbl = isC ? 'Current Step' : s.t;
+      h += `<div class="sop-stat" onclick="jumpSection(${i})">
+        <div class="sop-stat-val${isC?' gr':''}">${val}</div>
+        <div class="sop-stat-lbl">${lbl}</div>
+      </div>`;
+    });
+    h += `</div>`;
+
+    // Progress card
+    h += `<div class="sop-prog">
+      <div class="sop-prog-row"><span>Progress</span><span class="sop-prog-pct">${pct}%</span></div>
+      <div class="sop-prog-track"><div class="sop-prog-fill" style="width:${pct}%"></div></div>
+    </div>`;
+
+    // Pills + Narrate toggle
+    h += `<div class="sop-pills">`;
+    sop.sections.forEach((s, i) => {
+      const allDone = s.s.every(x => state.done.has(x.id));
+      const cls = allDone ? 'dn' : (i === si ? 'on' : '');
+      h += `<div class="sop-pill ${cls}" onclick="jumpSection(${i})">${s.i}. ${s.t}</div>`;
+    });
+    h += `<div class="sop-spc"></div>
+      <div class="tog-row">
+        <span class="tog-lbl">Narrate</span>
+        <div class="tog${state.narrateOn?' on':''}" onclick="toggleNarrate()"></div>
+      </div>
+    </div>`;
+
+    // Section checklist (active section only)
+    const secDone = sec.s.filter(x=>state.done.has(x.id)).length;
+    h += `<div class="cl-card">
+      <div class="cl-hdr">
+        <div class="cl-ttl">${sec.i}. ${sec.t} &middot; Steps</div>
+        <div class="sop-pill sm ${secDone===sec.s.length?'dn':''}">${secDone}/${sec.s.length}</div>
+      </div>
+      <div class="cl-body">
+        ${sec.s.map((s, idx) => {
+          const gi = sectionStart(si) + idx;
+          const isA = gi === state.cur;
+          const isD = state.done.has(s.id);
+          return `<div class="sr ${isA?'act':''}" onclick="go(${gi})">
+            <div class="chk ${isD?'on':''}" onclick="event.stopPropagation();toggleDone(${s.id})">${isD?CK:''}</div>
+            <span class="sr-lbl ${isD?'dn':''} ${isA?'cur':''}">${s.id}. ${s.t}</span>
+          </div>`;
+        }).join('')}
+      </div>
+    </div>`;
+
+    // Audio narration card (always show — SpeechSynthesis handles it free)
+    const narrTxt = narrationText(si);
+    h += `<div class="sop-audio">
+      <div class="sop-audio-row">
+        <button class="btn ${isSpeakingThis?'btn-s':'btn-p'}" onclick="${isSpeakingThis?'pauseSpeak()':`speak(${si})`}">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <path d="M3 5.5h2l3-2.5v10l-3-2.5H3a1 1 0 01-1-1v-3a1 1 0 011-1z" fill="currentColor" fill-opacity=".85"/>
+            ${isSpeakingThis
+              ? '<g stroke="currentColor" stroke-width="1.2" stroke-linecap="round"><path d="M10.5 5.5a3 3 0 010 5"/><path d="M12 4a5 5 0 010 8"/></g>'
+              : '<polygon points="11,6 14,8 11,10" fill="currentColor"/>'}
+          </svg>
+          ${isSpeakingThis?'Pause':'Play narration'}
+        </button>
+        <div class="sop-audio-trk"><div class="sop-audio-fill" id="audFill" style="width:${isSpeakingThis?state.speakProg*100:0}%"></div></div>
+        <div class="sop-pill sm ${isSpeakingThis?'on':''}">${sec.i}</div>
+      </div>
+      <div class="sop-audio-txt">&ldquo;${narrTxt}&rdquo;</div>
+      ${('speechSynthesis' in window) ? '' : '<div class="sop-audio-muted">Your browser doesn\'t support inline narration. Read the transcript above.</div>'}
+    </div>`;
+
+    // Main grid — mockup + detail
+    h += `<div class="sop-grid">
+      <div class="mock-card" id="mockPane"></div>
+      <div class="detail">
+        <div class="s-meta">
+          <div class="s-badge">Step ${step.id}</div>
+          <span class="s-sec">${sec.i}. ${sec.t}</span>
+        </div>
+        <div class="s-title">${step.t}</div>
+        <div class="s-desc">${step.d || ''}</div>
+
+        ${step.x ? `
+        <div class="d-card">
+          <div class="d-hdr" onclick="toggleDetail()">
+            <span class="d-chev ${state.detailOpen?'op':''}">&#9654;</span>Details
+          </div>
+          <div class="d-body ${state.detailOpen?'':'hid'}">${step.x}</div>
+        </div>` : ''}
+
+        ${step.tip ? `<div class="co tip"><div class="co-t">Pro tip</div><div class="co-x">${step.tip}</div></div>` : ''}
+        ${step.warn ? `<div class="co warn"><div class="co-t">Warning</div><div class="co-x">${step.warn}</div></div>` : ''}
+
+        <div class="chk-row" onclick="toggleDone(${step.id})">
+          <div class="chk ${state.done.has(step.id)?'on':''}">${state.done.has(step.id)?CK:''}</div>
+          <span class="chk-lbl">${state.done.has(step.id)?'Completed':'Mark this step as completed'}</span>
+        </div>
+      </div>
+    </div>`;
+
+    // Bottom nav
+    h += `<div class="navb">
+      <button class="btn btn-s" onclick="go(${state.cur-1})" ${state.cur===0?'disabled':''}>
+        <svg viewBox="0 0 14 14" fill="none"><path d="M9 3L5 7l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Previous
+      </button>
+      <div class="sop-spc"></div>
+      <span class="navb-ct">${state.cur+1} of ${TOTAL}</span>
+      <div class="sop-spc"></div>
+      <button class="btn btn-p" onclick="advance()" ${state.cur===TOTAL-1?'disabled':''}>
+        Next step
+        <svg viewBox="0 0 14 14" fill="none"><path d="M5 3l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      </button>
+    </div>`;
+
+    document.getElementById('app').innerHTML = h;
+    renderMockupInto(document.getElementById('mockPane'), step);
+  }
+
+  /* ─── Actions (exposed to inline onclicks) ─── */
+  window.go = function(idx) {
+    const clamped = Math.max(0, Math.min(idx, TOTAL - 1));
+    const prevSec = flat[state.cur].sectionIdx;
+    state.cur = clamped;
+    const newSec = flat[state.cur].sectionIdx;
+    if (newSec !== prevSec) {
+      cancelSpeak();
+      if (state.narrateOn) speak(newSec);
+    }
+    renderShell();
+  };
+  window.advance = function() {
+    state.done.add(flat[state.cur].step.id);
+    saveDone();
+    window.go(state.cur + 1);
+  };
+  window.jumpSection = function(si) { window.go(sectionStart(si)); };
+  window.toggleDone = function(id) {
+    if (state.done.has(id)) state.done.delete(id);
+    else state.done.add(id);
+    saveDone();
+    renderShell();
+  };
+  window.toggleDetail = function() { state.detailOpen = !state.detailOpen; renderShell(); };
+  window.toggleNarrate = function() {
+    state.narrateOn = !state.narrateOn;
+    if (state.narrateOn) speak(flat[state.cur].sectionIdx);
+    else cancelSpeak();
+    renderShell();
+  };
+  window.speak = speak;
+  window.pauseSpeak = pauseSpeak;
+  window.resumeSpeak = resumeSpeak;
+
+  /* ─── Keyboard shortcuts ─── */
+  document.addEventListener('keydown', e => {
+    // Don't hijack keys when an input is focused.
+    const tag = (document.activeElement && document.activeElement.tagName || '').toLowerCase();
+    if (tag === 'input' || tag === 'textarea') return;
+
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') { e.preventDefault(); window.go(state.cur + 1); }
+    else if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') { e.preventDefault(); window.go(state.cur - 1); }
+    else if (e.key === ' ')       { e.preventDefault(); state.speaking ? pauseSpeak() : speak(flat[state.cur].sectionIdx); }
+    else if (e.key === 'Enter')   { e.preventDefault(); window.advance(); }
+    else if (e.key.toLowerCase() === 'c') { e.preventDefault(); window.toggleDone(flat[state.cur].step.id); }
+  });
+
+  /* ─── Resize: re-overlay the highlight on fluid SVGs ─── */
+  let resizeTimer;
+  window.addEventListener('resize', () => {
+    clearTimeout(resizeTimer);
+    resizeTimer = setTimeout(() => renderMockupInto(document.getElementById('mockPane'), flat[state.cur].step), 120);
+  });
+
+  /* ─── Voice list loads async on some browsers ─── */
+  if ('speechSynthesis' in window) {
+    speechSynthesis.onvoiceschanged = () => {}; // no-op; voice picking happens on speak()
+  }
+
+  renderShell();
+}
+</script>
+</body>
+</html>

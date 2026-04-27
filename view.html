@@ -1,0 +1,574 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Operations Hub — Magnolia Health Care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ─── View page layout ─── */
+.hub{display:grid;grid-template-columns:260px 1fr;gap:32px;margin-top:32px;padding-bottom:80px;align-items:start}
+
+/* ─── Page header ─── */
+.page-hdr{display:flex;justify-content:space-between;align-items:flex-start;gap:24px;margin-bottom:22px}
+.page-hdr .eyebrow{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;letter-spacing:1.4px;color:var(--green);text-transform:uppercase;margin-bottom:10px;padding:5px 12px;background:var(--green-bg2);border-radius:var(--r-pill)}
+.page-hdr .eyebrow svg{width:13px;height:13px}
+.page-hdr h1{font-size:38px;font-weight:700;letter-spacing:-.7px;color:var(--t1);line-height:1.1;margin-bottom:8px}
+.page-hdr h1 em{font-style:italic;color:var(--green);font-weight:500}
+.page-hdr p{font-size:14.5px;color:var(--t3);max-width:620px;line-height:1.7}
+.page-hdr .meta{display:flex;gap:8px;flex-shrink:0;padding-top:6px}
+
+/* ─── Framework tabs (Training / SOPs / Resources) ─── */
+.tabs{display:flex;gap:4px;padding:4px;background:var(--white);border:1px solid var(--stroke);border-radius:var(--r-pill);box-shadow:var(--sh);margin-bottom:24px;width:fit-content}
+.tab{display:inline-flex;align-items:center;gap:8px;padding:9px 18px;font-size:12.5px;font-weight:600;color:var(--t3);border-radius:var(--r-pill);cursor:pointer;transition:all .2s;letter-spacing:.2px;white-space:nowrap}
+.tab svg{width:14px;height:14px}
+.tab:hover{color:var(--green);background:var(--sage-xl)}
+.tab.on{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(5,99,86,.24)}
+.tab.on:hover{background:var(--green);color:#fff}
+
+/* ─── Toolbar above grid ─── */
+.toolbar{display:flex;justify-content:space-between;align-items:center;gap:16px;margin-bottom:18px}
+.toolbar .count{font-size:12px;font-weight:600;color:var(--t3);letter-spacing:.2px}
+.toolbar .count strong{color:var(--t1);font-weight:700}
+.toolbar .actions{display:flex;gap:10px;align-items:center}
+.btn-add{display:inline-flex;align-items:center;gap:7px;padding:9px 18px;font-size:12.5px;font-weight:700;color:#fff;background:var(--green);border:none;border-radius:var(--r-pill);cursor:pointer;letter-spacing:.3px;box-shadow:0 2px 8px rgba(5,99,86,.22);transition:all .2s}
+.btn-add:hover{background:var(--green-l);box-shadow:0 4px 14px rgba(5,99,86,.32);transform:translateY(-1px)}
+.btn-add svg{width:14px;height:14px}
+.btn-ghost{display:inline-flex;align-items:center;gap:7px;padding:9px 16px;font-size:12.5px;font-weight:600;color:var(--t2);background:var(--white);border:1px solid var(--stroke-h);border-radius:var(--r-pill);cursor:pointer;letter-spacing:.2px;transition:all .2s}
+.btn-ghost:hover{color:var(--green);border-color:var(--green)}
+.btn-ghost svg{width:14px;height:14px}
+
+/* ─── Item grid ─── */
+.items{display:grid;grid-template-columns:repeat(auto-fill,minmax(320px,1fr));gap:16px;margin-bottom:32px}
+.item{background:var(--white);border:1px solid var(--stroke);border-radius:14px;padding:20px 22px;box-shadow:var(--sh);cursor:pointer;transition:all .2s;display:flex;flex-direction:column;gap:12px;text-decoration:none;color:inherit}
+.item:hover{border-color:var(--green);box-shadow:var(--sh-md);transform:translateY(-2px)}
+.item-top{display:flex;align-items:center;justify-content:space-between;gap:12px}
+.item-tag{font-size:9.5px;font-weight:700;color:var(--green);background:var(--green-bg2);padding:3px 9px;border-radius:var(--r-pill);letter-spacing:.6px;text-transform:uppercase}
+.item-tag.draft{background:rgba(153,153,153,.14);color:var(--t3)}
+.item-dur{font-size:11px;color:var(--t4);font-weight:600;font-variant-numeric:tabular-nums}
+.item h4{font-size:15px;font-weight:700;color:var(--t1);letter-spacing:-.15px;line-height:1.35;margin:0}
+.item p{font-size:12.5px;color:var(--t3);line-height:1.6;margin:0;flex:1}
+.item-ft{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:10px;border-top:1px solid var(--stroke);margin-top:auto}
+.item-ft .owner{font-size:11px;color:var(--t4);font-weight:500;display:inline-flex;align-items:center;gap:6px}
+.item-ft .owner svg{width:12px;height:12px}
+.item-ft .arrow{width:24px;height:24px;display:inline-flex;align-items:center;justify-content:center;border-radius:50%;background:var(--sage-xl);color:var(--green);transition:all .2s}
+.item-ft .arrow svg{width:12px;height:12px}
+.item:hover .item-ft .arrow{background:var(--green);color:#fff;transform:translateX(2px)}
+
+/* ─── Category filter chips (Resources) ─── */
+.chip-row{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:18px}
+.chip{display:inline-flex;align-items:center;gap:6px;padding:7px 14px;font-size:12px;font-weight:600;color:var(--t3);background:var(--white);border:1px solid var(--stroke-h);border-radius:var(--r-pill);cursor:pointer;transition:all .2s;letter-spacing:.1px;font-family:inherit}
+.chip:hover{color:var(--green);border-color:var(--green)}
+.chip.on{background:var(--green);color:#fff;border-color:var(--green);box-shadow:0 2px 8px rgba(5,99,86,.22)}
+.chip .ct{font-size:10px;font-weight:700;opacity:.65;margin-left:2px}
+.chip.on .ct{opacity:.9}
+
+/* ─── Resource card variant (files / templates) ─── */
+.item.res{flex-direction:row;align-items:stretch;gap:16px;padding:18px 20px}
+.item.res .file-ico{width:52px;height:62px;border-radius:8px;display:flex;flex-direction:column;align-items:center;justify-content:flex-end;padding:8px 4px 8px;flex-shrink:0;position:relative;overflow:hidden;color:#fff;font-size:9.5px;font-weight:700;letter-spacing:.5px}
+.item.res .file-ico::before{content:"";position:absolute;top:0;right:0;width:14px;height:14px;background:rgba(255,255,255,.35);clip-path:polygon(0 0,100% 100%,0 100%)}
+.item.res .file-ico.pdf{background:linear-gradient(145deg,#c54040,#9a2a2a)}
+.item.res .file-ico.doc{background:linear-gradient(145deg,#2b5ea8,#1d4177)}
+.item.res .file-ico.xls{background:linear-gradient(145deg,#1d6f42,#0e4b2a)}
+.item.res .file-ico.ppt{background:linear-gradient(145deg,#c06a20,#8e4e16)}
+.item.res .file-ico.link{background:linear-gradient(145deg,var(--green),var(--green-l))}
+.item.res .file-ico.img{background:linear-gradient(145deg,#7355c7,#54399c)}
+.item.res .res-body{display:flex;flex-direction:column;gap:6px;flex:1;min-width:0}
+.item.res .res-top{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.item.res .res-cat{font-size:9.5px;font-weight:700;color:var(--t3);background:var(--sage-l);padding:3px 9px;border-radius:var(--r-pill);letter-spacing:.6px;text-transform:uppercase}
+.item.res .res-size{font-size:10.5px;color:var(--t4);font-weight:600;letter-spacing:.3px}
+.item.res h4{font-size:14.5px;margin:0}
+.item.res p{font-size:12px;margin:0;line-height:1.55;flex:1}
+.item.res .res-ft{display:flex;align-items:center;justify-content:space-between;gap:10px;padding-top:4px;border:none;margin-top:2px}
+.item.res .res-ft .updated{font-size:10.5px;color:var(--t4);font-weight:500;letter-spacing:.2px}
+.item.res .res-ft .dl{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:700;color:var(--green);letter-spacing:.4px;text-transform:uppercase}
+.item.res .res-ft .dl svg{width:12px;height:12px}
+.item.res:hover .res-ft .dl{color:var(--green-l)}
+
+/* ─── Configure-this-section card ─── */
+.config-card{border-radius:14px;padding:22px 24px;background:linear-gradient(135deg,var(--sage-xl) 0%,var(--white) 100%);border:1px dashed var(--stroke-h);display:flex;justify-content:space-between;align-items:center;gap:20px;margin-bottom:20px}
+.config-card-txt strong{display:block;font-size:13.5px;font-weight:700;color:var(--t1);margin-bottom:3px;letter-spacing:-.1px}
+.config-card-txt span{font-size:12.5px;color:var(--t3);line-height:1.6}
+.config-card a{font-size:12px;font-weight:700;color:var(--green);letter-spacing:.3px;text-transform:uppercase;white-space:nowrap;padding:9px 18px;border:1.5px solid var(--green);border-radius:var(--r-pill);transition:all .2s}
+.config-card a:hover{background:var(--green);color:#fff}
+
+/* ─── Responsive ─── */
+@media (max-width:960px){
+  .hub{grid-template-columns:1fr;gap:20px}
+  .side{position:static}
+  .page-hdr{flex-direction:column}
+  .page-hdr h1{font-size:28px}
+  .toolbar{flex-direction:column;align-items:flex-start}
+  .items{grid-template-columns:1fr}
+  .config-card{flex-direction:column;align-items:flex-start;text-align:left}
+}
+</style>
+</head>
+<body>
+
+<!-- Top Nav -->
+<nav class="nav"><div class="nav-in">
+  <div class="nav-brand">
+    <span class="mark">MAGNOLIA <em>Health Care</em></span>
+    <span class="sub">Operations</span>
+  </div>
+  <div class="nav-links">
+    <a href="https://magnoliahealthcare.com">Home</a>
+    <a href="https://magnoliahealthcare.com/#philosophy">Our Philosophy</a>
+    <a href="https://magnoliahealthcare.com/#atlas">Atlas AI</a>
+    <a href="index.html" class="on">Operations Hub</a>
+    <a href="https://magnoliahealthcare.com/#contact">Contact Us</a>
+  </div>
+</div></nav>
+
+<!-- Compact hero -->
+<section class="hero compact"><div class="hero-in">
+  <div class="hero-badge"><div class="hero-dot"></div><span id="heroBadge">Department Knowledge</span></div>
+  <h1 class="serif" id="heroTitle">Operations <em>Hub</em></h1>
+  <p id="heroSub">Loading…</p>
+</div></section>
+
+<!-- View -->
+<div class="wrap"><div class="hub">
+
+  <!-- Sidebar: same department nav as hub, but each item links to view.html for the current framework -->
+  <aside class="side">
+    <div class="side-hdr">
+      <div class="eyebrow">Browse by</div>
+      <h3>Departments</h3>
+    </div>
+    <nav class="depts" id="depts">
+      <a class="dept" data-id="hr">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg></span>
+        HR
+      </a>
+      <a class="dept" data-id="compliance">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/><path d="m9 12 2 2 4-4"/></svg></span>
+        Compliance
+      </a>
+      <a class="dept" data-id="qa">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><path d="m9 11 3 3L22 4"/></svg></span>
+        Quality Assurance
+      </a>
+      <a class="dept" data-id="sales">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg></span>
+        Sales
+      </a>
+      <a class="dept" data-id="contracting">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><path d="m9 15 2 2 4-4"/></svg></span>
+        Contracting
+      </a>
+      <a class="dept" data-id="technology">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="20" height="14" rx="2"/><path d="M8 21h8"/><path d="M12 17v4"/></svg></span>
+        Technology
+      </a>
+      <a class="dept" data-id="support">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg></span>
+        Customer Support
+      </a>
+      <a class="dept" data-id="operations">
+        <span class="ico"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 1 1-4 0v-.09a1.65 1.65 0 0 0-1-1.51 1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 1 1 0-4h.09a1.65 1.65 0 0 0 1.51-1 1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33h0a1.65 1.65 0 0 0 1-1.51V3a2 2 0 1 1 4 0v.09a1.65 1.65 0 0 0 1 1.51h0a1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82v0a1.65 1.65 0 0 0 1.51 1H21a2 2 0 1 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg></span>
+        Operations
+      </a>
+    </nav>
+    <div class="side-ft">
+      <a href="index.html">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+        Back to Operations Hub
+      </a>
+    </div>
+  </aside>
+
+  <!-- Main panel -->
+  <main class="main">
+    <div class="crumb">
+      <a href="index.html">Operations Hub</a>
+      <span class="div">/</span>
+      <a href="index.html" id="crumbDept">HR</a>
+      <span class="div">/</span>
+      <span class="on" id="crumbView">Training</span>
+    </div>
+
+    <div class="page-hdr">
+      <div>
+        <div class="eyebrow" id="viewEyebrow">
+          <svg id="viewIcon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"></svg>
+          <span id="viewLabel">Training</span>
+        </div>
+        <h1 class="serif" id="pageTitle">Human <em>Resources</em></h1>
+        <p id="pageSub">Loading…</p>
+      </div>
+      <div class="meta">
+        <span class="badge draft" id="configBadge"><span class="dot"></span>Not Configured</span>
+      </div>
+    </div>
+
+    <!-- Framework tabs -->
+    <div class="tabs" id="tabs">
+      <a class="tab" data-view="training">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/></svg>
+        Training
+      </a>
+      <a class="tab" data-view="sops">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+        SOPs
+      </a>
+      <a class="tab" data-view="resources">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Resources
+      </a>
+    </div>
+
+    <!-- Configure / populate CTA -->
+    <div class="config-card">
+      <div class="config-card-txt">
+        <strong id="configTitle">No content in this section yet</strong>
+        <span id="configSub">Add the first item to populate this space for your team.</span>
+      </div>
+      <a href="#">Configure →</a>
+    </div>
+
+    <!-- Toolbar -->
+    <div class="toolbar">
+      <div class="count"><strong id="itemCount">0</strong> <span id="itemKind">items</span></div>
+      <div class="actions">
+        <button class="btn-ghost">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="22 3 2 3 10 12.46 10 19 14 21 14 12.46 22 3"/></svg>
+          Filter
+        </button>
+        <button class="btn-add">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+          <span id="addLabel">Add Training</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Category filter chips (only shown for Resources view) -->
+    <div class="chip-row" id="chipRow" style="display:none"></div>
+
+    <!-- Item grid (populated by JS; empty state shown when no items) -->
+    <div class="items" id="items"></div>
+
+    <!-- Empty state fallback -->
+    <div class="empty" id="emptyState" style="display:none">
+      <strong id="emptyTitle">No training modules yet.</strong>
+      <span id="emptyCopy">Training materials added to this department will appear here.</span>
+      <br><a href="#">Add the first item →</a>
+    </div>
+  </main>
+
+</div></div>
+
+<script>
+// ─── Department catalog ───
+const DEPTS = {
+  hr:         { label:'HR',                title:'Human <em>Resources</em>' },
+  compliance: { label:'Compliance',        title:'Compliance <em>& Risk</em>' },
+  qa:         { label:'Quality Assurance', title:'Quality <em>Assurance</em>' },
+  sales:      { label:'Sales',             title:'Sales <em>Department</em>' },
+  contracting:{ label:'Contracting',       title:'Carrier <em>Contracting</em>' },
+  technology: { label:'Technology',        title:'Technology <em>& Systems</em>' },
+  support:    { label:'Customer Support',  title:'Customer <em>Support</em>' },
+  operations: { label:'Operations',        title:'Operations <em>& Data</em>' }
+};
+
+// ─── Framework catalog (Training / SOPs / Resources) ───
+// Each framework has its own copy, item-noun, and icon path. When real content
+// is wired up, items get pulled from the data layer and rendered below.
+const VIEWS = {
+  training: {
+    label: 'Training',
+    plural: 'training modules',
+    noun: 'training module',
+    sub: dept => `Onboarding paths, certifications, and role-specific skill-building for the ${dept} team.`,
+    addLabel: 'Add Training',
+    iconPath: '<polygon points="23 7 16 12 23 17 23 7"/><rect x="1" y="5" width="15" height="14" rx="2"/>',
+  },
+  sops: {
+    label: 'SOPs',
+    plural: 'standard operating procedures',
+    noun: 'SOP',
+    sub: dept => `Standard operating procedures that define how the ${dept} team gets work done — owned and maintained by each team.`,
+    addLabel: 'Add SOP',
+    iconPath: '<path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/>',
+  },
+  resources: {
+    label: 'Resources',
+    plural: 'resources',
+    noun: 'resource',
+    sub: dept => `Reference material, templates, forms, and quick-access tools the ${dept} team needs to do the job.`,
+    addLabel: 'Add Resource',
+    iconPath: '<path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/>',
+  }
+};
+
+// ─── Content data (placeholder — Mitchell + Kyle will populate) ───
+// Shape: CONTENT[deptId][viewId] = [ { title, desc, duration, tag, owner, sopId?, trainingId?, ... } ]
+//   · trainingId → deep-links a Training row into trainings-data.js (full Trainual-style module)
+//   · sopId      → deep-links a SOPs row into sops-data.js (full Kyle-framework walkthrough)
+//   · Resource rows use a different shape: { title, desc, category, fileType, fileSize, updated, url }
+// Leave a dept/view pair out, or set to [], to show the empty state.
+const CONTENT = {
+  hr: {
+    training: [
+      { title:'New Hire Welcome', desc:'Placeholder training showcasing every feature of the Trainual-style framework — rich text, images, video embed, takeaways, and a quiz.', duration:'~8 min', tag:'Preview', trainingId:'new-hire-welcome' },
+      { title:'Day 1–90 Onboarding Path', desc:'System access, compliance training, scenario practice, and 30/60/90 evaluations.', duration:'12 modules', tag:'Draft' },
+      { title:'Sexual Harassment Prevention', desc:'State-mandated annual training for all team members. Video + scenario quiz.', duration:'60 min', tag:'Draft' },
+    ],
+    sops: [
+      { title:'Sample Workflow', desc:'Placeholder SOP demonstrating every feature of the framework — sections, tips, warnings, visual mockups, and progress. Replace this with your first real SOP.', duration:'5 steps', tag:'Preview', sopId:'sample-workflow' },
+    ],
+    resources: [
+      { title:'New Hire Paperwork Packet', desc:'W-4, I-9, direct deposit form, HIPAA acknowledgement, and confidentiality agreement — bundled for Day 1.', category:'Forms', fileType:'pdf', fileSize:'1.2 MB', updated:'Apr 2026', url:'#' },
+      { title:'Offer Letter Template', desc:'Customizable offer letter with start date, compensation, and at-will language already compliant with state requirements.', category:'Templates', fileType:'doc', fileSize:'94 KB', updated:'Mar 2026', url:'#' },
+      { title:'30/60/90 Performance Review', desc:'Milestone review template used by team leads for every new hire during their first 90 days.', category:'Templates', fileType:'doc', fileSize:'68 KB', updated:'Feb 2026', url:'#' },
+      { title:'Benefits Summary — 2026', desc:'At-a-glance overview of medical, dental, vision, 401(k), and PTO benefits for the current plan year.', category:'Reference', fileType:'pdf', fileSize:'412 KB', updated:'Jan 2026', url:'#' },
+      { title:'Disciplinary Action Form', desc:'Formal write-up template for verbal warning, written warning, and final warning — used with HR approval.', category:'Forms', fileType:'pdf', fileSize:'180 KB', updated:'Feb 2026', url:'#' },
+      { title:'BambooHR Employee Portal', desc:'Direct link to the employee self-service portal for PTO requests, pay stubs, and benefits enrollment.', category:'Links', fileType:'link', fileSize:'—', updated:'—', url:'https://bamboohr.com' },
+    ],
+  },
+
+  contracting: {
+    sops: [
+      { title:'Aetna MAPD Downline Onboarding', desc:'Step-by-step guide with voice narration to onboard a writing agent under your Aetna MA/MAPD downline.', duration:'Guided walkthrough', tag:'Preview', url:'aetna-mapd-downline-onboarding.html' },
+    ],
+  },
+
+  technology: {
+    sops: [
+      { title:'PolicyDen', desc:'The full training hub for Magnolia\'s PolicyDen CRM — onboarding, contacts, policies, pipeline, tasks, messages, calls, Atlas AI, and admin setup. Organized into bite-sized module walkthroughs.', duration:'13 modules', tag:'Core', url:'policyden.html' },
+    ],
+  },
+
+  support: {
+    training: [
+      { title:'HIPAA Compliance for Customer Service', desc:'17-slide training covering PHI identification, two-identifier verification, third-party authorization, minimum necessary rule, physical security, and breach response. Annual requirement for all CSRs.', duration:'45 min', tag:'Required', owner:'Yanick Bass' },
+      { title:'Call Scenario Training & Risk Assessment', desc:'8 real-world call scenarios across 3 risk tiers (Low, Moderate, High/Critical). CSRs practice ID card inquiries, copay confusion, enrollment disputes, cancellation requests, agent complaints, and unauthorized enrollments with guided decision trees.', duration:'60 min', tag:'Required', owner:'Yanick Bass' },
+      { title:'Tier 1 CSR Onboarding', desc:'Complete onboarding path for non-licensed Tier 1 CSRs — opening scripts, HIPAA verification, call routing, warm transfer protocol, and the Cardinal Rule (no benefits interpretation).', duration:'8 modules', tag:'Core', owner:'Yanick Bass' },
+      { title:'Tier 2 CSR Advanced Training', desc:'Licensed agent training for Tier 2 CSRs — claims handling, provider inquiries, benefit explanations, carrier coordination, and escalation management. Requires 2-15 or 2-40 license + AHIP + Medicare certification.', duration:'10 modules', tag:'Core', owner:'Yanick Bass' },
+      { title:'De-Escalation & A.C.T. Framework', desc:'The 6-step de-escalation verbiage (Acknowledge, Validate, Reassure, Set Expectation, Control, Transition) plus the Supervisor A.C.T. framework (Acknowledge, Clarify, Take Ownership). Role-play scenarios included.', duration:'30 min', tag:'Core', owner:'Yanick Bass' },
+      { title:'SMS Communication Compliance', desc:'Approved vs. prohibited SMS language, message classification system (8 categories), agent notification protocol via Slack, and all 12 approved response templates.', duration:'25 min', tag:'Core', owner:'Yanick Bass' },
+    ],
+    sops: [
+      { title:'SOP-CS-001: Inbound Customer Service — Tier 1 & Tier 2', desc:'Complete two-tier call handling procedure. Tier 1 (non-licensed): opening script, HIPAA verification (name + DOB + zip), call routing, warm transfer handoff. Tier 2 (licensed): claims, providers, benefits, escalations. Full carrier contact directory included.', duration:'12 phases', tag:'Active', owner:'Yanick Bass', sopId:'cs-001-inbound' },
+      { title:'SOP-CS-002: Escalation & De-Escalation Procedures', desc:'Three-level escalation framework: Level 1 (CSR resolution with 6-step de-escalation verbiage), Level 2 (Supervisor takeover with A.C.T. framework), Level 3 (Compliance/Formal Grievance). Includes abusive caller protocol and Corrective Action Plan process.', duration:'8 phases', tag:'Active', owner:'Yanick Bass', sopId:'cs-002-escalation' },
+      { title:'SOP-CS-003: SMS Communication & Documentation', desc:'SMS as a service-only channel — same-day response requirement, 8 message classifications, 12 approved response templates, prohibited language list, agent notification via Slack, and PolicyDen documentation standards.', duration:'5 phases', tag:'Active', owner:'Yanick Bass', sopId:'cs-003-sms' },
+      { title:'SOP-CS-004: HIPAA Compliance for Customer Service', desc:'PHI identification, two-identifier verification rule, third-party authorization, minimum necessary rule, physical security, breach response protocol, and QA scorecard integration. Covers all 17 slides of the Medicare HIPAA Training.', duration:'8 phases', tag:'Active', owner:'Yanick Bass', sopId:'cs-004-hipaa' },
+      { title:'SOP-CS-005: Policy Cancellation Prevention', desc:'Supervisor-led save procedure: discovery → clarification → resolution options (PCP reassignment, provider verification, medication review) → consequence disclosure → final decision. Carrier cancellation numbers and "withdraw application" terminology.', duration:'6 phases', tag:'Active', owner:'Yanick Bass', sopId:'cs-005-cancellation' },
+      { title:'SOP-CS-006: CSR Quality Assurance Scorecard', desc:'100-point CMS-weighted scorecard across 7 categories with auto-fail red flags. Scoring tiers: Green (95-100), Yellow (90-94), Red (<90). Evaluation procedures, coaching triggers, and real QA examples with scoring breakdowns.', duration:'Complete framework', tag:'Active', owner:'Yanick Bass', sopId:'cs-006-qa' },
+      { title:'SOP-CS-007: Call Scenario Training & Risk Assessment', desc:'8 scenarios across 3 risk tiers — Low (ID card, transportation), Moderate (copay confusion, provider network), High (enrollment disputes, cancellations, agent complaints), Critical (unauthorized enrollment). Decision trees per scenario.', duration:'8 scenarios', tag:'Active', owner:'Yanick Bass', sopId:'cs-007-scenarios' },
+    ],
+    resources: [
+      { title:'Carrier Contact Directory', desc:'Direct phone numbers for all Medicare Advantage carriers — member lines, non-member lines, and cancellation-specific numbers. Aetna, Anthem, CarePlus, Cigna, Devoted, Humana, UHC, Wellcare, People\'s Health, and more.', category:'Reference', fileType:'doc', fileSize:'—', updated:'Apr 2026', url:'#' },
+      { title:'CS Complaint & Escalation Form', desc:'Standardized documentation template for all escalation calls — call summary, primary/secondary complaint, key findings, member decision, compliance/risk notes. Required for every Level 2+ escalation.', category:'Forms', fileType:'doc', fileSize:'—', updated:'Apr 2026', url:'#' },
+      { title:'CSR QA Scorecard Template', desc:'Blank 2026 QA scorecard with all 7 categories, point weights, auto-fail triggers, and scoring tiers. Used by QA evaluators for weekly CSR call assessments.', category:'Forms', fileType:'xls', fileSize:'14 KB', updated:'Apr 2026', url:'#' },
+      { title:'De-Escalation Verbiage Card', desc:'Quick-reference card with the 6-step de-escalation framework: Acknowledge, Validate, Reassure, Set Expectation, Control, Transition. Exact phrases for each step. Print and keep at desk.', category:'Reference', fileType:'pdf', fileSize:'—', updated:'Apr 2026', url:'#' },
+      { title:'SMS Response Templates', desc:'All 12 approved SMS templates: PHI redirect, dissatisfied members, "don\'t know you" response, enrollment redirect, cancellation, urgent callback, ID card, file sharing, welcome packet, wrong plan info, effective date, missed call.', category:'Templates', fileType:'doc', fileSize:'—', updated:'Apr 2026', url:'#' },
+      { title:'Cancellation Prevention Script', desc:'Full supervisor save script — opening through final decision. Includes resolution options checklist and consequence disclosure language. Supervisor use only.', category:'Templates', fileType:'doc', fileSize:'—', updated:'Apr 2026', url:'#' },
+      { title:'HIPAA Training Slide Deck', desc:'17-slide PowerPoint covering PHI, verification, authorization, minimum necessary, physical security, and breach response. Used for annual HIPAA certification training.', category:'Training Materials', fileType:'ppt', fileSize:'1.9 MB', updated:'Apr 2026', url:'#' },
+      { title:'Corrective Action Plan (CAP) Template', desc:'Formal CAP template triggered by founded complaints — compliance notification, coaching documentation, and remediation tracking. Used with Sales President and Team Lead.', category:'Forms', fileType:'doc', fileSize:'—', updated:'Apr 2026', url:'#' },
+    ],
+  },
+
+};
+
+// ─── URL parsing ───
+function getParam(k, fallback) {
+  const v = new URLSearchParams(location.search).get(k);
+  return v || fallback;
+}
+
+const deptId = DEPTS[getParam('dept', 'hr')] ? getParam('dept', 'hr') : 'hr';
+let   viewId = VIEWS[getParam('view', 'training')] ? getParam('view', 'training') : 'training';
+
+// ─── Renderers ───
+function renderSidebar() {
+  // Mark the active dept, and route each dept pill to view.html with the current view preserved.
+  document.querySelectorAll('.dept').forEach(el => {
+    const id = el.dataset.id;
+    el.classList.toggle('on', id === deptId);
+    el.setAttribute('href', `view.html?dept=${id}&view=${viewId}`);
+  });
+}
+
+function renderTabs() {
+  document.querySelectorAll('.tab').forEach(el => {
+    const v = el.dataset.view;
+    el.classList.toggle('on', v === viewId);
+    el.setAttribute('href', `view.html?dept=${deptId}&view=${v}`);
+  });
+}
+
+function renderHeader() {
+  const dept = DEPTS[deptId];
+  const view = VIEWS[viewId];
+
+  document.getElementById('heroBadge').textContent = `${dept.label} · ${view.label}`;
+  document.getElementById('heroTitle').innerHTML = `${view.label} <em>for ${dept.label}</em>`;
+  document.getElementById('heroSub').textContent = view.sub(dept.label);
+
+  document.getElementById('crumbDept').textContent = dept.label;
+  document.getElementById('crumbDept').setAttribute('href', 'index.html');
+  document.getElementById('crumbView').textContent = view.label;
+
+  document.getElementById('viewLabel').textContent = view.label;
+  document.getElementById('viewIcon').innerHTML = view.iconPath;
+
+  document.getElementById('pageTitle').innerHTML = dept.title;
+  document.getElementById('pageSub').textContent = view.sub(dept.label);
+  document.getElementById('addLabel').textContent = view.addLabel;
+  document.getElementById('itemKind').textContent = view.plural;
+
+  document.title = `${dept.label} ${view.label} — Magnolia Operations Hub`;
+}
+
+// Active resource filter (resets each time view changes)
+let activeCategory = 'All';
+
+// Deep-link rules:
+//   training  → training.html?id=…   (unless an explicit `url` override is set)
+//   SOPs      → sop.html?id=…         (unless an explicit `url` override is set —
+//                                       e.g. a Kyle-style standalone SOP page)
+//   resources → external file URL
+function itemHref(it) {
+  if (viewId === 'training') {
+    if (it.url) return it.url;
+    if (it.trainingId) return `training.html?id=${it.trainingId}&dept=${deptId}`;
+  }
+  if (viewId === 'sops') {
+    if (it.url) return it.url;
+    if (it.sopId) return `sop.html?id=${it.sopId}&dept=${deptId}`;
+  }
+  if (viewId === 'resources') return it.url || '#';
+  return '#';
+}
+
+function fileLabel(type) {
+  const map = { pdf:'PDF', doc:'DOC', docx:'DOC', xls:'XLS', xlsx:'XLS', ppt:'PPT', pptx:'PPT', link:'LINK', url:'LINK', img:'IMG', png:'IMG', jpg:'IMG' };
+  return map[(type || '').toLowerCase()] || 'FILE';
+}
+function fileClass(type) {
+  const map = { pdf:'pdf', doc:'doc', docx:'doc', xls:'xls', xlsx:'xls', ppt:'ppt', pptx:'ppt', link:'link', url:'link', img:'img', png:'img', jpg:'img' };
+  return map[(type || '').toLowerCase()] || 'doc';
+}
+
+function renderChips(items) {
+  // Only render category chips for Resources view
+  const host = document.getElementById('chipRow');
+  if (viewId !== 'resources' || items.length === 0) { host.innerHTML = ''; host.style.display = 'none'; return; }
+
+  const counts = {};
+  items.forEach(it => {
+    const c = it.category || 'Uncategorized';
+    counts[c] = (counts[c] || 0) + 1;
+  });
+  const categories = ['All', ...Object.keys(counts).sort()];
+  host.style.display = 'flex';
+  host.innerHTML = categories.map(cat => {
+    const count = cat === 'All' ? items.length : counts[cat];
+    return `<button class="chip ${cat === activeCategory ? 'on' : ''}" data-cat="${cat}">${cat}<span class="ct">${count}</span></button>`;
+  }).join('');
+  host.querySelectorAll('.chip').forEach(c => c.addEventListener('click', () => {
+    activeCategory = c.dataset.cat;
+    renderItems();
+  }));
+}
+
+function renderItems() {
+  const view = VIEWS[viewId];
+  const allItems = (CONTENT[deptId] && CONTENT[deptId][viewId]) || [];
+  const items = (viewId === 'resources' && activeCategory !== 'All')
+    ? allItems.filter(it => (it.category || 'Uncategorized') === activeCategory)
+    : allItems;
+
+  const grid = document.getElementById('items');
+  const empty = document.getElementById('emptyState');
+  const configBadge = document.getElementById('configBadge');
+  const configTitle = document.getElementById('configTitle');
+  const configSub = document.getElementById('configSub');
+
+  renderChips(allItems);
+  document.getElementById('itemCount').textContent = items.length;
+
+  if (allItems.length === 0) {
+    grid.innerHTML = '';
+    empty.style.display = 'block';
+    document.getElementById('emptyTitle').textContent = `No ${view.plural} yet.`;
+    document.getElementById('emptyCopy').textContent =
+      `${view.label} added to ${DEPTS[deptId].label} will appear here.`;
+    configBadge.innerHTML = '<span class="dot"></span>Not Configured';
+    configBadge.className = 'badge draft';
+    configTitle.textContent = 'No content in this section yet';
+    configSub.textContent = `Add the first ${view.noun} to populate this space for your team.`;
+    return;
+  }
+
+  empty.style.display = 'none';
+  configBadge.innerHTML = '<span class="dot"></span>Active';
+  configBadge.className = 'badge';
+  configTitle.textContent = `${allItems.length} ${allItems.length === 1 ? view.noun : view.plural} available`;
+  configSub.textContent = `Review, edit, or add new ${view.plural} for the ${DEPTS[deptId].label} team.`;
+
+  if (viewId === 'resources') {
+    // File-style resource cards with download / open-link CTA
+    grid.innerHTML = items.map(it => {
+      const isLink = (it.fileType || '').toLowerCase() === 'link' || (it.url || '').startsWith('http');
+      const external = isLink ? ' target="_blank" rel="noopener"' : ' download';
+      return `
+        <a class="item res" href="${itemHref(it)}"${external}>
+          <div class="file-ico ${fileClass(it.fileType)}">${fileLabel(it.fileType)}</div>
+          <div class="res-body">
+            <div class="res-top">
+              <span class="res-cat">${it.category || 'Resource'}</span>
+              ${it.fileSize ? `<span class="res-size">${it.fileSize}</span>` : ''}
+            </div>
+            <h4>${it.title}</h4>
+            <p>${it.desc || ''}</p>
+            <div class="res-ft">
+              <span class="updated">${it.updated ? 'Updated ' + it.updated : '&nbsp;'}</span>
+              <span class="dl">
+                ${isLink
+                  ? 'Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+                  : 'Download <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
+                }
+              </span>
+            </div>
+          </div>
+        </a>
+      `;
+    }).join('');
+    return;
+  }
+
+  // Default card (Training + SOPs)
+  grid.innerHTML = items.map(it => `
+    <a class="item" href="${itemHref(it)}">
+      <div class="item-top">
+        <span class="item-tag${it.tag && it.tag.toLowerCase() === 'draft' ? ' draft' : ''}">${it.tag || view.label}</span>
+        ${it.duration ? `<span class="item-dur">${it.duration}</span>` : ''}
+      </div>
+      <h4>${it.title}</h4>
+      <p>${it.desc || ''}</p>
+      <div class="item-ft">
+        <span class="owner">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"/><circle cx="12" cy="7" r="4"/></svg>
+          ${it.owner || DEPTS[deptId].label + ' team'}
+        </span>
+        <span class="arrow">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+        </span>
+      </div>
+    </a>
+  `).join('');
+}
+
+// ─── Init ───
+renderSidebar();
+renderTabs();
+renderHeader();
+renderItems();
+</script>
+</body>
+</html>

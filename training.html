@@ -1,0 +1,427 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Training — Magnolia Health Care</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;500;600;700;800&family=Montserrat:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="styles.css">
+<style>
+/* ─── Training viewer ─── */
+body{background:var(--sage-xl)}
+.trn-shell{display:grid;grid-template-columns:320px 1fr;gap:0;max-width:1480px;margin:0 auto;min-height:calc(100vh - 60px);align-items:stretch}
+
+/* Left sidebar (reused pattern from sop.html) */
+.trn-side{background:var(--white);border-right:1px solid var(--stroke);display:flex;flex-direction:column;position:sticky;top:60px;height:calc(100vh - 60px);overflow-y:auto}
+.trn-side-hdr{padding:22px 24px 18px;border-bottom:1px solid var(--stroke);background:linear-gradient(180deg,var(--sage-xl) 0%,var(--white) 100%)}
+.trn-side-hdr .back{display:inline-flex;align-items:center;gap:6px;font-size:11px;font-weight:600;color:var(--t3);letter-spacing:.4px;text-transform:uppercase;margin-bottom:14px;transition:color .2s}
+.trn-side-hdr .back:hover{color:var(--green)}
+.trn-side-hdr .back svg{width:12px;height:12px}
+.trn-side-hdr h2{font-size:20px;font-weight:700;line-height:1.2;color:var(--t1);letter-spacing:-.3px;margin-bottom:6px;font-family:'Playfair Display',serif}
+.trn-side-hdr h2 em{font-style:italic;color:var(--green);font-weight:500}
+.trn-side-hdr p{font-size:12px;color:var(--t3);line-height:1.6}
+.trn-side-hdr .meta{display:flex;gap:10px;margin-top:12px;font-size:10px;color:var(--t4);font-weight:600;letter-spacing:.3px;text-transform:uppercase}
+.trn-side-hdr .meta .div{opacity:.5}
+
+.prog-wrap{padding:16px 24px 14px;border-bottom:1px solid var(--stroke);background:var(--white)}
+.prog-top{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;font-size:10.5px;font-weight:700;color:var(--t3);letter-spacing:.8px;text-transform:uppercase}
+.prog-top .pct{color:var(--green)}
+.prog-bar{height:4px;background:var(--sage-l);border-radius:4px;overflow:hidden}
+.prog-fill{height:100%;background:linear-gradient(90deg,var(--green),var(--green-l));border-radius:4px;transition:width .4s cubic-bezier(.4,0,.2,1)}
+
+.trn-topics{flex:1;padding:10px 0 24px}
+.tpc{border-bottom:1px solid var(--sage-l)}
+.tpc:last-child{border-bottom:0}
+.tpc-hdr{display:flex;align-items:center;gap:12px;padding:14px 24px;cursor:pointer;transition:background .15s;width:100%;background:transparent;border:none;text-align:left;font-family:inherit}
+.tpc-hdr:hover{background:var(--sage-xl)}
+.tpc-badge{width:28px;height:28px;border-radius:8px;background:var(--sage-l);color:var(--t3);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:700;flex-shrink:0;transition:all .2s}
+.tpc.active .tpc-badge{background:var(--green);color:#fff}
+.tpc.done .tpc-badge{background:var(--green);color:#fff}
+.tpc-info{flex:1;min-width:0}
+.tpc-info .nm{font-size:13.5px;font-weight:600;color:var(--t1);letter-spacing:-.1px}
+.tpc.active .tpc-info .nm{color:var(--green)}
+.tpc-info .ct{font-size:10.5px;color:var(--t4);font-weight:600;letter-spacing:.3px;text-transform:uppercase;margin-top:2px}
+.chev{width:14px;height:14px;color:var(--t4);flex-shrink:0;transition:transform .2s}
+.tpc.open .chev{transform:rotate(180deg)}
+.tpc-steps{display:none;padding:4px 24px 14px 64px}
+.tpc.open .tpc-steps{display:block}
+.stp{display:flex;align-items:flex-start;gap:10px;padding:9px 10px 9px 0;font-size:12.5px;color:var(--t2);cursor:pointer;border-radius:var(--r-sm);transition:all .15s}
+.stp:hover{background:var(--sage-xl);padding-left:10px;padding-right:10px}
+.stp.on{background:var(--green-bg);color:var(--green);font-weight:600;padding-left:10px;padding-right:10px}
+.stp-check{width:16px;height:16px;border-radius:50%;border:1.5px solid var(--stroke-h);background:var(--white);flex-shrink:0;display:flex;align-items:center;justify-content:center;margin-top:1px;transition:all .2s}
+.stp-check svg{width:10px;height:10px;color:#fff;opacity:0}
+.stp.done .stp-check{background:var(--green);border-color:var(--green)}
+.stp.done .stp-check svg{opacity:1}
+.stp-ttl{flex:1;line-height:1.45}
+.stp.done .stp-ttl{text-decoration:line-through;text-decoration-color:var(--stroke-h);color:var(--t4)}
+
+/* Right: content area */
+.trn-main{padding:28px 36px 48px;max-width:880px}
+.trn-crumb{display:flex;align-items:center;gap:8px;font-size:11px;font-weight:600;letter-spacing:.4px;text-transform:uppercase;color:var(--t4);margin-bottom:20px;flex-wrap:wrap}
+.trn-crumb .div{opacity:.5}
+.trn-crumb .on{color:var(--green)}
+.trn-crumb a:hover{color:var(--green)}
+
+.content-card{background:var(--white);border-radius:14px;padding:32px 40px 28px;box-shadow:var(--sh);border:1px solid var(--stroke)}
+.content-top{display:flex;justify-content:space-between;align-items:flex-start;gap:16px;margin-bottom:12px;flex-wrap:wrap}
+.tpc-pill{display:inline-flex;align-items:center;gap:8px;font-size:10.5px;font-weight:700;color:var(--green);background:var(--green-bg2);padding:5px 12px;border-radius:var(--r-pill);letter-spacing:.8px;text-transform:uppercase}
+.tpc-pill .n{font-family:'Playfair Display',serif;font-size:13px;line-height:1}
+.step-num{font-size:11px;font-weight:700;color:var(--t4);letter-spacing:.4px;text-transform:uppercase}
+
+.content-card h1{font-size:30px;font-weight:700;letter-spacing:-.5px;color:var(--t1);line-height:1.15;margin:8px 0 20px;font-family:'Playfair Display',serif}
+
+/* Rich content styling */
+.body-html{font-size:15px;line-height:1.75;color:var(--t2)}
+.body-html p{margin-bottom:14px}
+.body-html h3{font-family:'Playfair Display',serif;font-size:20px;font-weight:600;color:var(--t1);margin:22px 0 12px;letter-spacing:-.2px}
+.body-html h4{font-size:14px;font-weight:700;color:var(--t1);text-transform:uppercase;letter-spacing:.6px;margin:18px 0 8px}
+.body-html ul,.body-html ol{padding-left:22px;margin-bottom:14px}
+.body-html li{margin-bottom:6px;line-height:1.7}
+.body-html strong{color:var(--t1);font-weight:700}
+.body-html em{font-style:italic}
+.body-html a{color:var(--green);text-decoration:underline;text-decoration-thickness:1.5px;text-underline-offset:3px}
+.body-html a:hover{color:var(--green-l)}
+.body-html blockquote{border-left:3px solid var(--green);background:rgba(5,99,86,.04);padding:12px 18px;margin:14px 0;border-radius:0 8px 8px 0}
+.body-html blockquote p{margin:0;font-family:'Playfair Display',serif;font-style:italic;font-size:17px;color:var(--t1);line-height:1.55}
+.body-html code{background:var(--sage-xl);padding:2px 6px;border-radius:4px;font-family:ui-monospace,SFMono-Regular,Menlo,monospace;font-size:13px;color:var(--t1)}
+
+/* Media */
+.media{margin:18px 0 10px;border-radius:12px;overflow:hidden;border:1px solid var(--stroke);background:var(--sage-xl)}
+.media img{width:100%;display:block}
+.media .video-wrap{position:relative;padding-top:56.25%;background:#000}
+.media .video-wrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.media-caption{font-size:11.5px;font-weight:600;color:var(--t4);letter-spacing:.3px;padding:10px 14px;background:var(--white);border-top:1px solid var(--stroke);text-transform:uppercase}
+
+/* Takeaway */
+.takeaway{display:flex;gap:12px;padding:14px 18px;background:rgba(5,99,86,.05);border-left:3px solid var(--green);border-radius:0 10px 10px 0;margin:18px 0 6px;font-size:13.5px;line-height:1.65;color:var(--t2)}
+.takeaway svg{width:18px;height:18px;color:var(--green);flex-shrink:0;margin-top:2px}
+.takeaway .lbl{display:block;font-weight:700;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;margin-bottom:3px;color:var(--green)}
+
+/* Quiz */
+.quiz{background:var(--sage-xl);border:1px solid var(--stroke);border-radius:12px;padding:20px 22px;margin:20px 0 6px}
+.quiz .q-lbl{font-size:10.5px;font-weight:700;color:var(--green);letter-spacing:.8px;text-transform:uppercase;margin-bottom:10px}
+.quiz .q-question{font-family:'Playfair Display',serif;font-size:19px;color:var(--t1);line-height:1.4;margin-bottom:16px;font-weight:600}
+.quiz .q-opts{display:flex;flex-direction:column;gap:8px}
+.quiz .q-opt{display:flex;align-items:flex-start;gap:10px;padding:12px 14px;background:var(--white);border:1.5px solid var(--stroke);border-radius:10px;cursor:pointer;transition:all .2s;font-size:13.5px;color:var(--t2);line-height:1.5;text-align:left;font-family:inherit;width:100%}
+.quiz .q-opt:hover:not(:disabled){border-color:var(--green);background:var(--green-bg)}
+.quiz .q-opt:disabled{cursor:default}
+.quiz .q-opt.correct{border-color:var(--green);background:rgba(5,99,86,.08);color:var(--green);font-weight:600}
+.quiz .q-opt.wrong{border-color:#c54040;background:rgba(197,64,64,.05);color:#c54040}
+.quiz .q-opt .letter{width:20px;height:20px;border-radius:50%;border:1.5px solid var(--stroke-h);background:var(--white);flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:10.5px;font-weight:700;color:var(--t3);margin-top:1px}
+.quiz .q-opt.correct .letter{background:var(--green);border-color:var(--green);color:#fff}
+.quiz .q-opt.wrong .letter{background:#c54040;border-color:#c54040;color:#fff}
+.quiz .q-explain{margin-top:14px;padding:12px 14px;background:var(--white);border-radius:8px;font-size:13px;line-height:1.65;color:var(--t2);display:none}
+.quiz .q-explain.on{display:block}
+
+/* Controls */
+.controls{display:flex;justify-content:space-between;align-items:center;gap:12px;padding-top:24px;margin-top:24px;border-top:1px solid var(--stroke);flex-wrap:wrap}
+.btn{display:inline-flex;align-items:center;gap:8px;padding:10px 18px;border-radius:var(--r-pill);font-size:12.5px;font-weight:700;letter-spacing:.3px;cursor:pointer;transition:all .2s;border:none;font-family:inherit}
+.btn svg{width:14px;height:14px}
+.btn-ghost{background:var(--white);color:var(--t2);border:1px solid var(--stroke-h)}
+.btn-ghost:hover:not(:disabled){color:var(--green);border-color:var(--green)}
+.btn-ghost:disabled{opacity:.4;cursor:not-allowed}
+.btn-primary{background:var(--green);color:#fff;box-shadow:0 2px 8px rgba(5,99,86,.22)}
+.btn-primary:hover{background:var(--green-l);box-shadow:0 4px 14px rgba(5,99,86,.32);transform:translateY(-1px)}
+.btn-done{background:var(--white);color:var(--green);border:1.5px solid var(--green)}
+.btn-done:hover{background:var(--green-bg)}
+.btn-done.on{background:var(--green);color:#fff}
+
+/* Error state */
+.trn-error{max-width:520px;margin:80px auto;text-align:center;padding:40px 32px;background:var(--white);border-radius:14px;box-shadow:var(--sh-md)}
+.trn-error h3{font-family:'Playfair Display',serif;font-size:22px;color:var(--t1);margin-bottom:10px}
+.trn-error p{font-size:13px;color:var(--t3);line-height:1.7;margin-bottom:18px}
+
+@media (max-width:960px){
+  .trn-shell{grid-template-columns:1fr}
+  .trn-side{position:static;height:auto;max-height:none}
+  .trn-main{padding:20px}
+  .content-card{padding:24px 22px}
+  .content-card h1{font-size:24px}
+}
+</style>
+</head>
+<body>
+
+<nav class="nav"><div class="nav-in">
+  <div class="nav-brand">
+    <span class="mark">MAGNOLIA <em>Health Care</em></span>
+    <span class="sub">Operations</span>
+  </div>
+  <div class="nav-links">
+    <a href="https://magnoliahealthcare.com">Home</a>
+    <a href="https://magnoliahealthcare.com/#philosophy">Our Philosophy</a>
+    <a href="https://magnoliahealthcare.com/#atlas">Atlas AI</a>
+    <a href="index.html" class="on">Operations Hub</a>
+    <a href="https://magnoliahealthcare.com/#contact">Contact Us</a>
+  </div>
+</div></nav>
+
+<div id="root"></div>
+
+<script src="trainings-data.js"></script>
+<script>
+const params = new URLSearchParams(location.search);
+const trainingId = params.get('id') || '';
+const deptId = params.get('dept') || '';
+const training = (window.TRAININGS && window.TRAININGS[trainingId]) || null;
+
+if (!training) {
+  document.getElementById('root').innerHTML = `
+    <div class="trn-error">
+      <h3>Training not found</h3>
+      <p>The training <strong>${trainingId ? '"' + trainingId + '"' : '(none specified)'}</strong> doesn't exist in the dataset.
+         Ask the author to add it to <code>trainings-data.js</code>, or go back to the Operations Hub.</p>
+      <a class="btn btn-primary" href="index.html" style="text-decoration:none">← Back to Operations Hub</a>
+    </div>`;
+} else {
+  // Flatten steps; track topic index per step
+  const flat = [];
+  training.topics.forEach((tp, ti) => tp.steps.forEach(st => flat.push({ topicIdx: ti, step: st })));
+
+  const STORAGE_KEY = `magnolia-training-progress:${trainingId}`;
+  function loadProgress() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      return raw ? new Set(JSON.parse(raw)) : new Set();
+    } catch { return new Set(); }
+  }
+  function saveProgress() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify([...state.done])); } catch {}
+  }
+
+  const state = {
+    current: 0,
+    done: loadProgress(),
+    openTopics: new Set([0]),
+    quizAnswered: {},     // stepId -> picked option index
+  };
+
+  const root = document.getElementById('root');
+  root.innerHTML = `
+    <div class="trn-shell">
+      <aside class="trn-side">
+        <div class="trn-side-hdr">
+          <a class="back" href="${deptId ? `view.html?dept=${deptId}&view=training` : 'index.html'}">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+            ${deptId ? 'Back to Training' : 'Operations Hub'}
+          </a>
+          <h2>${training.title}</h2>
+          <p>${training.description || ''}</p>
+          <div class="meta">
+            <span>${training.department || ''}</span>
+            ${training.department && training.duration ? '<span class="div">·</span>' : ''}
+            <span>${training.duration || ''}</span>
+            ${training.version ? '<span class="div">·</span><span>v' + training.version + '</span>' : ''}
+          </div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-top"><span>Progress</span><span class="pct" id="progPct">0%</span></div>
+          <div class="prog-bar"><div class="prog-fill" id="progFill" style="width:0%"></div></div>
+        </div>
+        <nav class="trn-topics" id="topics"></nav>
+      </aside>
+
+      <main class="trn-main">
+        <div class="trn-crumb">
+          <a href="index.html">Operations Hub</a>
+          ${deptId ? '<span class="div">/</span><a href="view.html?dept=' + deptId + '&view=training">Training</a>' : ''}
+          <span class="div">/</span>
+          <span class="on" id="crumbTtl"></span>
+        </div>
+
+        <div class="content-card">
+          <div class="content-top">
+            <span class="tpc-pill"><span class="n" id="topicN">1</span><span id="topicNm">Topic</span></span>
+            <span class="step-num" id="stepNum">Step 1 of ${flat.length}</span>
+          </div>
+          <h1 id="stpTtl"></h1>
+
+          <div class="body-html" id="stpBody"></div>
+          <div id="mediaSlot"></div>
+          <div class="takeaway" id="takeawayBox" style="display:none">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7h7l-5.5 4.5 2 7L12 16l-6.5 4.5 2-7L2 9h7l3-7z"/></svg>
+            <div><span class="lbl">Takeaway</span><span id="takeawayTxt"></span></div>
+          </div>
+          <div id="quizSlot"></div>
+
+          <div class="controls">
+            <button class="btn btn-ghost" id="btnPrev">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+              Previous
+            </button>
+            <button class="btn btn-done" id="btnDone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg>
+              <span id="doneLbl">Mark complete</span>
+            </button>
+            <button class="btn btn-primary" id="btnNext">
+              Next step
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+            </button>
+          </div>
+        </div>
+      </main>
+    </div>
+  `;
+
+  function renderTopics() {
+    const host = document.getElementById('topics');
+    host.innerHTML = training.topics.map((tp, ti) => {
+      const open = state.openTopics.has(ti);
+      const active = flat[state.current].topicIdx === ti;
+      const allDone = tp.steps.every(s => state.done.has(s.id));
+      return `
+        <div class="tpc ${open ? 'open' : ''} ${active ? 'active' : ''} ${allDone ? 'done' : ''}">
+          <button class="tpc-hdr" data-ti="${ti}">
+            <span class="tpc-badge">${allDone ? '✓' : tp.i}</span>
+            <span class="tpc-info">
+              <span class="nm">${tp.t}</span>
+              <span class="ct">${tp.steps.length} step${tp.steps.length === 1 ? '' : 's'}</span>
+            </span>
+            <svg class="chev" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"/></svg>
+          </button>
+          <div class="tpc-steps">
+            ${tp.steps.map(s => {
+              const flatIdx = flat.findIndex(f => f.step.id === s.id);
+              const done = state.done.has(s.id);
+              const on = flatIdx === state.current;
+              return `
+                <div class="stp ${on ? 'on' : ''} ${done ? 'done' : ''}" data-flat="${flatIdx}">
+                  <span class="stp-check"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><polyline points="20 6 9 17 4 12"/></svg></span>
+                  <span class="stp-ttl">${s.t}</span>
+                </div>
+              `;
+            }).join('')}
+          </div>
+        </div>
+      `;
+    }).join('');
+
+    host.querySelectorAll('.tpc-hdr').forEach(b => b.addEventListener('click', () => {
+      const ti = +b.dataset.ti;
+      if (state.openTopics.has(ti)) state.openTopics.delete(ti);
+      else state.openTopics.add(ti);
+      renderTopics();
+    }));
+    host.querySelectorAll('.stp').forEach(el => el.addEventListener('click', () => {
+      go(+el.dataset.flat);
+    }));
+  }
+
+  function renderProgress() {
+    const pct = flat.length ? Math.round((state.done.size / flat.length) * 100) : 0;
+    document.getElementById('progPct').textContent = pct + '%';
+    document.getElementById('progFill').style.width = pct + '%';
+  }
+
+  function renderMedia(step) {
+    const slot = document.getElementById('mediaSlot');
+    if (!step.media) { slot.innerHTML = ''; return; }
+    const cap = step.media.caption ? `<div class="media-caption">${step.media.caption}</div>` : '';
+    if (step.media.type === 'image') {
+      slot.innerHTML = `<div class="media"><img src="${step.media.url}" alt="">${cap}</div>`;
+    } else if (step.media.type === 'video' || step.media.type === 'loom') {
+      slot.innerHTML = `<div class="media"><div class="video-wrap"><iframe src="${step.media.url}" allowfullscreen></iframe></div>${cap}</div>`;
+    }
+  }
+
+  function renderQuiz(step) {
+    const slot = document.getElementById('quizSlot');
+    if (!step.quiz) { slot.innerHTML = ''; return; }
+    const q = step.quiz;
+    const picked = state.quizAnswered[step.id];
+    const letters = ['A','B','C','D','E','F'];
+    slot.innerHTML = `
+      <div class="quiz">
+        <div class="q-lbl">Knowledge check</div>
+        <div class="q-question">${q.question}</div>
+        <div class="q-opts">
+          ${q.options.map((opt, i) => {
+            const isPicked = picked !== undefined;
+            const isCorrect = i === q.answer;
+            const cls = !isPicked ? '' : (i === picked && !isCorrect) ? 'wrong' : (isCorrect ? 'correct' : '');
+            return `<button class="q-opt ${cls}" data-i="${i}" ${isPicked ? 'disabled' : ''}>
+              <span class="letter">${letters[i]}</span><span>${opt}</span>
+            </button>`;
+          }).join('')}
+        </div>
+        <div class="q-explain ${picked !== undefined && q.explain ? 'on' : ''}">${q.explain || ''}</div>
+      </div>
+    `;
+    slot.querySelectorAll('.q-opt').forEach(b => b.addEventListener('click', () => {
+      state.quizAnswered[step.id] = +b.dataset.i;
+      renderQuiz(step);
+    }));
+  }
+
+  function renderStep() {
+    const { topicIdx, step } = flat[state.current];
+    const topic = training.topics[topicIdx];
+    document.getElementById('topicN').textContent = topic.i;
+    document.getElementById('topicNm').textContent = topic.t;
+    document.getElementById('stepNum').textContent = `Step ${state.current + 1} of ${flat.length}`;
+    document.getElementById('stpTtl').textContent = step.t;
+    document.getElementById('stpBody').innerHTML = step.body || '';
+    document.getElementById('crumbTtl').textContent = step.t;
+
+    renderMedia(step);
+    renderQuiz(step);
+
+    const tk = document.getElementById('takeawayBox');
+    if (step.takeaway) {
+      tk.style.display = 'flex';
+      document.getElementById('takeawayTxt').textContent = step.takeaway;
+    } else {
+      tk.style.display = 'none';
+    }
+
+    document.getElementById('btnPrev').disabled = state.current === 0;
+    document.getElementById('btnNext').disabled = state.current === flat.length - 1;
+    const isDone = state.done.has(step.id);
+    document.getElementById('btnDone').classList.toggle('on', isDone);
+    document.getElementById('doneLbl').textContent = isDone ? 'Completed' : 'Mark complete';
+
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+
+  function go(i) {
+    if (i < 0 || i >= flat.length) return;
+    state.current = i;
+    state.openTopics.add(flat[i].topicIdx);
+    renderTopics();
+    renderStep();
+  }
+
+  function toggleDone() {
+    const id = flat[state.current].step.id;
+    if (state.done.has(id)) state.done.delete(id);
+    else state.done.add(id);
+    saveProgress();
+    renderTopics();
+    renderProgress();
+    renderStep();
+  }
+
+  document.getElementById('btnPrev').addEventListener('click', () => go(state.current - 1));
+  document.getElementById('btnNext').addEventListener('click', () => {
+    state.done.add(flat[state.current].step.id);
+    saveProgress();
+    go(state.current + 1);
+    renderProgress();
+  });
+  document.getElementById('btnDone').addEventListener('click', toggleDone);
+
+  // Resume from first incomplete step
+  const firstTodo = flat.findIndex(f => !state.done.has(f.step.id));
+  if (firstTodo > 0) {
+    state.current = firstTodo;
+    state.openTopics = new Set([flat[firstTodo].topicIdx]);
+  }
+
+  renderTopics();
+  renderProgress();
+  renderStep();
+}
+</script>
+</body>
+</html>
