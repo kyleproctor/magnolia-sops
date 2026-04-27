@@ -514,8 +514,9 @@ function renderItems() {
   if (viewId === 'resources') {
     // File-style resource cards with download / open-link CTA
     grid.innerHTML = items.map(it => {
-      const isLink = (it.fileType || '').toLowerCase() === 'link' || (it.url || '').startsWith('http');
-      const external = isLink ? ' target="_blank" rel="noopener"' : ' download';
+      const isViewer = (it.url || '').startsWith('sop.html') || (it.url || '').startsWith('training.html');
+      const isLink = isViewer || (it.fileType || '').toLowerCase() === 'link' || (it.url || '').startsWith('http');
+      const external = isLink ? '' : ' download';
       return `
         <a class="item res" href="${itemHref(it)}"${external}>
           <div class="file-ico ${fileClass(it.fileType)}">${fileLabel(it.fileType)}</div>
@@ -530,7 +531,7 @@ function renderItems() {
               <span class="updated">${it.updated ? 'Updated ' + it.updated : '&nbsp;'}</span>
               <span class="dl">
                 ${isLink
-                  ? 'Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M18 13v6a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2V8a2 2 0 0 1 2-2h6"/><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/></svg>'
+                  ? 'Open <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14"/><polyline points="12 5 19 12 12 19"/></svg>'
                   : 'Download <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>'
                 }
               </span>
